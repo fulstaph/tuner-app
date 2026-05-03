@@ -1,4 +1,5 @@
 import Foundation
+@testable import Tuner
 
 enum TestHelpers {
     static func generateSineWave(
@@ -14,5 +15,24 @@ enum TestHelpers {
 
     static func generateSilence(count: Int = 4096) -> [Float] {
         [Float](repeating: 0, count: count)
+    }
+}
+
+final class MockAudioEngine: AudioEngineProtocol {
+    var onBuffer: (([Float]) -> Void)?
+    let sampleRate: Float = 44100
+    var didStart = false
+    var didStop = false
+
+    func start() throws {
+        didStart = true
+    }
+
+    func stop() {
+        didStop = true
+    }
+
+    func simulateBuffer(_ buffer: [Float]) {
+        onBuffer?(buffer)
     }
 }
