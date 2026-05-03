@@ -72,7 +72,7 @@
 		E626B4080154DED88222CC87 /* NoteMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMapper.swift; sourceTree = "<group>"; };
 		EFB60FBAB022418113C7C546 /* TunerStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerStyle.swift; sourceTree = "<group>"; };
 		FA1E7673F68DCD65713DE2C3 /* TunerDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerDisplayView.swift; sourceTree = "<group>"; };
-		FD414E3FDE1B48E6636CC07D /* Tuner.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Tuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD414E3FDE1B48E6636CC07D /* Tuner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -505,6 +505,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = FJ3DK4V4YS;
 				INFOPLIST_FILE = Tuner/App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -555,6 +556,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = FJ3DK4V4YS;
 				INFOPLIST_FILE = Tuner/App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

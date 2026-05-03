@@ -11,3 +11,6 @@ build/
 
 # Superpowers
 .superpowers/
+
+# Claude
+.claude/
