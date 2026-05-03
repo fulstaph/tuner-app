@@ -8,6 +8,10 @@ final class TunerViewModelTests: XCTestCase {
     @MainActor
     override func setUp() {
         super.setUp()
+        // Clear persisted settings so defaults are used on every run
+        UserDefaults.standard.removeObject(forKey: "tunerStyle")
+        UserDefaults.standard.removeObject(forKey: "instrumentPreset")
+        UserDefaults.standard.removeObject(forKey: "referencePitch")
         mockEngine = MockAudioEngine()
         viewModel = TunerViewModel(audioEngine: mockEngine)
     }
