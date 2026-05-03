@@ -1,0 +1,628 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		095EED5FDA9FB934B63EB27E /* NoteMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF51900E7EC8F5449EBD4E8 /* NoteMapperTests.swift */; };
+		0B66942CCF62B1D5B713F3AE /* TunerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86C6402B0CFE0A23F82A3D2B /* TunerViewModelTests.swift */; };
+		0E0CD830A4F8D99C343F8153 /* TunerDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1E7673F68DCD65713DE2C3 /* TunerDisplayView.swift */; };
+		1ECD5C08B1DFC18EE0706BBA /* TunerStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB60FBAB022418113C7C546 /* TunerStyle.swift */; };
+		233F888933D78DCF23F9AA03 /* TunerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7649DED303EC43E58FEC51D1 /* TunerApp.swift */; };
+		2B83620036A3D06FE5AEF1E1 /* PitchDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = E419701774EEDE7BE0F75E8B /* PitchDetector.swift */; };
+		3BC895AC96AF63D9014BF427 /* LinearBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179BE42D209E35F0CA4C708E /* LinearBarView.swift */; };
+		3F95DD766C4AB8DD1EF1DF53 /* TunerDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 592D2925DFF1459934130DF4 /* TunerDataTests.swift */; };
+		5473FB6707AF79CEBDF4FDDC /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF57B143F5427768FBFD8033 /* TestHelpers.swift */; };
+		64AD72BD404D8DF110723992 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D0996940C561EC6F79C19 /* ContentView.swift */; };
+		6E6BB9749F8B34C3FFC8CAA1 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8DDC0D0F9CCABEF6F19DFA /* AudioEngine.swift */; };
+		7338383E30297DC70A385362 /* PitchDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106BFA760C31343F40488373 /* PitchDetectorTests.swift */; };
+		805350DF97F355A9677AEEE0 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06926F8F07FB1EC71C2268FF /* SettingsView.swift */; };
+		822365E42B9BCF014385C89B /* InstrumentPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F7EE329D1EB5B8EA651261 /* InstrumentPreset.swift */; };
+		AC42EF4380495CB710DEA135 /* TunerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E8136491ED340A92ABAC8E /* TunerData.swift */; };
+		B0FE1653079F88C37FC7DD58 /* MinimalistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63873201B76E00CCDA348DC /* MinimalistView.swift */; };
+		BECCDFFF41B62A0A0AFF6AA6 /* NeedleGaugeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BF44E271F581CA31AF1FE9B /* NeedleGaugeView.swift */; };
+		CF9FCFAA672BCA4C1EF5C7E8 /* NoteMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E626B4080154DED88222CC87 /* NoteMapper.swift */; };
+		DA5A478750EEC24D664245D2 /* TunerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E2F6537CFA7F0EACD73C5 /* TunerUITests.swift */; };
+		DC9DD0CC314BE54737608192 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97EC35051D44F87E0B052EB6 /* Assets.xcassets */; };
+		F502666FCAC35197082DB021 /* TunerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD08A8F1F2C9FDD4E6002DEC /* TunerViewModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		456EA97F367685948A361590 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 206B861CF0CD8D48309338DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 164B8DD1DA5477ED2944F943;
+			remoteInfo = Tuner;
+		};
+		5522261F8CA1B0F1E93AA3D4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 206B861CF0CD8D48309338DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 164B8DD1DA5477ED2944F943;
+			remoteInfo = Tuner;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		06926F8F07FB1EC71C2268FF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		09E8136491ED340A92ABAC8E /* TunerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerData.swift; sourceTree = "<group>"; };
+		106BFA760C31343F40488373 /* PitchDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PitchDetectorTests.swift; sourceTree = "<group>"; };
+		179BE42D209E35F0CA4C708E /* LinearBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearBarView.swift; sourceTree = "<group>"; };
+		28E2D899808D2D2F3D3EAD66 /* TunerUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TunerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A8DDC0D0F9CCABEF6F19DFA /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
+		370D0996940C561EC6F79C19 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3BF44E271F581CA31AF1FE9B /* NeedleGaugeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeedleGaugeView.swift; sourceTree = "<group>"; };
+		592D2925DFF1459934130DF4 /* TunerDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerDataTests.swift; sourceTree = "<group>"; };
+		744110E5BDAA2F5933655C41 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7649DED303EC43E58FEC51D1 /* TunerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerApp.swift; sourceTree = "<group>"; };
+		86C6402B0CFE0A23F82A3D2B /* TunerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerViewModelTests.swift; sourceTree = "<group>"; };
+		97EC35051D44F87E0B052EB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		ADF51900E7EC8F5449EBD4E8 /* NoteMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMapperTests.swift; sourceTree = "<group>"; };
+		BD08A8F1F2C9FDD4E6002DEC /* TunerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerViewModel.swift; sourceTree = "<group>"; };
+		C63873201B76E00CCDA348DC /* MinimalistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimalistView.swift; sourceTree = "<group>"; };
+		C97E2F6537CFA7F0EACD73C5 /* TunerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerUITests.swift; sourceTree = "<group>"; };
+		CBCEC996968A56A035B27F7D /* TunerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TunerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CF57B143F5427768FBFD8033 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
+		E419701774EEDE7BE0F75E8B /* PitchDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PitchDetector.swift; sourceTree = "<group>"; };
+		E4F7EE329D1EB5B8EA651261 /* InstrumentPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstrumentPreset.swift; sourceTree = "<group>"; };
+		E626B4080154DED88222CC87 /* NoteMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMapper.swift; sourceTree = "<group>"; };
+		EFB60FBAB022418113C7C546 /* TunerStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerStyle.swift; sourceTree = "<group>"; };
+		FA1E7673F68DCD65713DE2C3 /* TunerDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerDisplayView.swift; sourceTree = "<group>"; };
+		FD414E3FDE1B48E6636CC07D /* Tuner.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Tuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		28476EB87C3D9A5A173C1932 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				744110E5BDAA2F5933655C41 /* Info.plist */,
+				7649DED303EC43E58FEC51D1 /* TunerApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		3601859247CF76A52E30E95A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FD414E3FDE1B48E6636CC07D /* Tuner.app */,
+				CBCEC996968A56A035B27F7D /* TunerTests.xctest */,
+				28E2D899808D2D2F3D3EAD66 /* TunerUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5B61DBCB8812AB1C13EB9973 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				370D0996940C561EC6F79C19 /* ContentView.swift */,
+				06926F8F07FB1EC71C2268FF /* SettingsView.swift */,
+				FA1E7673F68DCD65713DE2C3 /* TunerDisplayView.swift */,
+				BF0EBF6DCF4ABADB5C988DE4 /* Styles */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5E21A3E0FCAED9605AF18AA9 = {
+			isa = PBXGroup;
+			children = (
+				5E915968260877E3C7B552D6 /* Tuner */,
+				E9BDACA8535C545A87431536 /* TunerTests */,
+				A922D5022539B1A2F598E554 /* TunerUITests */,
+				3601859247CF76A52E30E95A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5E915968260877E3C7B552D6 /* Tuner */ = {
+			isa = PBXGroup;
+			children = (
+				97EC35051D44F87E0B052EB6 /* Assets.xcassets */,
+				28476EB87C3D9A5A173C1932 /* App */,
+				DE02A5669F8FD24BA39844EC /* Audio */,
+				7710E73BABF17C7E6C40DFB3 /* Core */,
+				704C66F4B3389B58175E299E /* Models */,
+				947207CF4B9FC5831446F342 /* ViewModels */,
+				5B61DBCB8812AB1C13EB9973 /* Views */,
+			);
+			path = Tuner;
+			sourceTree = "<group>";
+		};
+		704C66F4B3389B58175E299E /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E4F7EE329D1EB5B8EA651261 /* InstrumentPreset.swift */,
+				09E8136491ED340A92ABAC8E /* TunerData.swift */,
+				EFB60FBAB022418113C7C546 /* TunerStyle.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		7710E73BABF17C7E6C40DFB3 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				E626B4080154DED88222CC87 /* NoteMapper.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		947207CF4B9FC5831446F342 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				BD08A8F1F2C9FDD4E6002DEC /* TunerViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		A922D5022539B1A2F598E554 /* TunerUITests */ = {
+			isa = PBXGroup;
+			children = (
+				C97E2F6537CFA7F0EACD73C5 /* TunerUITests.swift */,
+			);
+			path = TunerUITests;
+			sourceTree = "<group>";
+		};
+		BF0EBF6DCF4ABADB5C988DE4 /* Styles */ = {
+			isa = PBXGroup;
+			children = (
+				179BE42D209E35F0CA4C708E /* LinearBarView.swift */,
+				C63873201B76E00CCDA348DC /* MinimalistView.swift */,
+				3BF44E271F581CA31AF1FE9B /* NeedleGaugeView.swift */,
+			);
+			path = Styles;
+			sourceTree = "<group>";
+		};
+		DE02A5669F8FD24BA39844EC /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				2A8DDC0D0F9CCABEF6F19DFA /* AudioEngine.swift */,
+				E419701774EEDE7BE0F75E8B /* PitchDetector.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		E9BDACA8535C545A87431536 /* TunerTests */ = {
+			isa = PBXGroup;
+			children = (
+				ADF51900E7EC8F5449EBD4E8 /* NoteMapperTests.swift */,
+				106BFA760C31343F40488373 /* PitchDetectorTests.swift */,
+				592D2925DFF1459934130DF4 /* TunerDataTests.swift */,
+				86C6402B0CFE0A23F82A3D2B /* TunerViewModelTests.swift */,
+				EA6504BCFA8ABEF0B07D0713 /* Helpers */,
+			);
+			path = TunerTests;
+			sourceTree = "<group>";
+		};
+		EA6504BCFA8ABEF0B07D0713 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				CF57B143F5427768FBFD8033 /* TestHelpers.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		164B8DD1DA5477ED2944F943 /* Tuner */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1E14D891503F7DD98744A1BE /* Build configuration list for PBXNativeTarget "Tuner" */;
+			buildPhases = (
+				F8F928AC0CB6F5F5C3552B27 /* Sources */,
+				4C198FD8C5371D5CD3504D1F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Tuner;
+			packageProductDependencies = (
+			);
+			productName = Tuner;
+			productReference = FD414E3FDE1B48E6636CC07D /* Tuner.app */;
+			productType = "com.apple.product-type.application";
+		};
+		74E6ADC4296B86469DBD69A9 /* TunerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9DB945F6CD3D72F2604E9342 /* Build configuration list for PBXNativeTarget "TunerTests" */;
+			buildPhases = (
+				4966B65833ECA54D1E35E729 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C545F03AA61946F40FD01F56 /* PBXTargetDependency */,
+			);
+			name = TunerTests;
+			packageProductDependencies = (
+			);
+			productName = TunerTests;
+			productReference = CBCEC996968A56A035B27F7D /* TunerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		EE62312860F3F1D915C1FC5F /* TunerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8392ED6750236A3E76A3B182 /* Build configuration list for PBXNativeTarget "TunerUITests" */;
+			buildPhases = (
+				65C07E49C23AF242C16DD0DD /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				931526F88D98BDBCA2196E35 /* PBXTargetDependency */,
+			);
+			name = TunerUITests;
+			packageProductDependencies = (
+			);
+			productName = TunerUITests;
+			productReference = 28E2D899808D2D2F3D3EAD66 /* TunerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		206B861CF0CD8D48309338DC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					EE62312860F3F1D915C1FC5F = {
+						TestTargetID = 164B8DD1DA5477ED2944F943;
+					};
+				};
+			};
+			buildConfigurationList = FF471A9999CC521BEAACF738 /* Build configuration list for PBXProject "Tuner" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 5E21A3E0FCAED9605AF18AA9;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 3601859247CF76A52E30E95A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				164B8DD1DA5477ED2944F943 /* Tuner */,
+				74E6ADC4296B86469DBD69A9 /* TunerTests */,
+				EE62312860F3F1D915C1FC5F /* TunerUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4C198FD8C5371D5CD3504D1F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC9DD0CC314BE54737608192 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4966B65833ECA54D1E35E729 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				095EED5FDA9FB934B63EB27E /* NoteMapperTests.swift in Sources */,
+				7338383E30297DC70A385362 /* PitchDetectorTests.swift in Sources */,
+				5473FB6707AF79CEBDF4FDDC /* TestHelpers.swift in Sources */,
+				3F95DD766C4AB8DD1EF1DF53 /* TunerDataTests.swift in Sources */,
+				0B66942CCF62B1D5B713F3AE /* TunerViewModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		65C07E49C23AF242C16DD0DD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DA5A478750EEC24D664245D2 /* TunerUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8F928AC0CB6F5F5C3552B27 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6E6BB9749F8B34C3FFC8CAA1 /* AudioEngine.swift in Sources */,
+				64AD72BD404D8DF110723992 /* ContentView.swift in Sources */,
+				822365E42B9BCF014385C89B /* InstrumentPreset.swift in Sources */,
+				3BC895AC96AF63D9014BF427 /* LinearBarView.swift in Sources */,
+				B0FE1653079F88C37FC7DD58 /* MinimalistView.swift in Sources */,
+				BECCDFFF41B62A0A0AFF6AA6 /* NeedleGaugeView.swift in Sources */,
+				CF9FCFAA672BCA4C1EF5C7E8 /* NoteMapper.swift in Sources */,
+				2B83620036A3D06FE5AEF1E1 /* PitchDetector.swift in Sources */,
+				805350DF97F355A9677AEEE0 /* SettingsView.swift in Sources */,
+				233F888933D78DCF23F9AA03 /* TunerApp.swift in Sources */,
+				AC42EF4380495CB710DEA135 /* TunerData.swift in Sources */,
+				0E0CD830A4F8D99C343F8153 /* TunerDisplayView.swift in Sources */,
+				1ECD5C08B1DFC18EE0706BBA /* TunerStyle.swift in Sources */,
+				F502666FCAC35197082DB021 /* TunerViewModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		931526F88D98BDBCA2196E35 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 164B8DD1DA5477ED2944F943 /* Tuner */;
+			targetProxy = 5522261F8CA1B0F1E93AA3D4 /* PBXContainerItemProxy */;
+		};
+		C545F03AA61946F40FD01F56 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 164B8DD1DA5477ED2944F943 /* Tuner */;
+			targetProxy = 456EA97F367685948A361590 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2B89DFFB1894D3EF9D7DE5A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tunerapp.TunerTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tuner.app/Tuner";
+			};
+			name = Release;
+		};
+		309EC8276C9537203D5AF12B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		96A49370F180F17778E010C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		9701B084141E4A07DB5239BE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Tuner/App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tunerapp.tuner;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		AC10533106595DDB5FDC4BFF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tunerapp.TunerUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Tuner;
+			};
+			name = Debug;
+		};
+		C9A0F78CD16D7B87D0B2B9E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tunerapp.TunerUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Tuner;
+			};
+			name = Release;
+		};
+		DC21856005C059F8A1C79792 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Tuner/App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tunerapp.tuner;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		F9F53BE6592793A52D875E49 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tunerapp.TunerTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tuner.app/Tuner";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1E14D891503F7DD98744A1BE /* Build configuration list for PBXNativeTarget "Tuner" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC21856005C059F8A1C79792 /* Debug */,
+				9701B084141E4A07DB5239BE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8392ED6750236A3E76A3B182 /* Build configuration list for PBXNativeTarget "TunerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC10533106595DDB5FDC4BFF /* Debug */,
+				C9A0F78CD16D7B87D0B2B9E0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9DB945F6CD3D72F2604E9342 /* Build configuration list for PBXNativeTarget "TunerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F9F53BE6592793A52D875E49 /* Debug */,
+				2B89DFFB1894D3EF9D7DE5A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FF471A9999CC521BEAACF738 /* Build configuration list for PBXProject "Tuner" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				309EC8276C9537203D5AF12B /* Debug */,
+				96A49370F180F17778E010C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 206B861CF0CD8D48309338DC /* Project object */;
+}
