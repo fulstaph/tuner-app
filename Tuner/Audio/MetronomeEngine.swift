@@ -133,13 +133,27 @@ final class MetronomeEngine {
         guard let player = playerNode else { return }
         let engine = ownedEngine ?? borrowedEngine
         guard let engine, engine.isRunning else { return }
-        guard let nodeTime = player.lastRenderTime, nodeTime.isSampleTimeValid else { return }
         guard let accentBuf = accentBuffer, let normalBuf = normalBuffer else { return }
+
+        guard let nodeTime = player.lastRenderTime, nodeTime.isSampleTimeValid else {
+            // lastRenderTime not valid yet — bootstrap by playing the first beat immediately
+            if nextBeatSampleTime < 0 {
+                let buffer = currentBeat == 0 ? accentBuf : normalBuf
+                player.scheduleBuffer(buffer, at: nil, options: [])
+                let beat = currentBeat
+                DispatchQueue.main.async { [weak self] in self?.onBeat?(beat) }
+                currentBeat = (currentBeat + 1) % beatsPerMeasure
+                nextBeatSampleTime = 0
+            }
+            return
+        }
 
         let rate = nodeTime.sampleRate
 
-        if nextBeatSampleTime < 0 {
-            nextBeatSampleTime = nodeTime.sampleTime
+        // After bootstrap, anchor next beat one interval from current position
+        if nextBeatSampleTime <= 0 {
+            let samplesPerBeat = AVAudioFramePosition(rate * 60.0 / Double(bpm))
+            nextBeatSampleTime = nodeTime.sampleTime + samplesPerBeat
         }
 
         let lookAheadSamples = AVAudioFramePosition(rate * 0.1) // 100ms

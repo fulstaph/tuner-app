@@ -5,6 +5,7 @@ struct MetronomeMinimalView: View {
     @Bindable var viewModel: MetronomeViewModel
     @State private var isEditingBPM = false
     @State private var bpmText = ""
+    @FocusState private var isBPMFieldFocused: Bool
 
     var body: some View {
         VStack(spacing: 40) {
@@ -36,6 +37,7 @@ struct MetronomeMinimalView: View {
                 .font(.system(size: 64, weight: .bold, design: .rounded))
                 .multilineTextAlignment(.center)
                 .keyboardType(.numberPad)
+                .focused($isBPMFieldFocused)
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
                         Spacer()
@@ -49,12 +51,14 @@ struct MetronomeMinimalView: View {
                 .onTapGesture {
                     bpmText = "\(viewModel.bpm)"
                     isEditingBPM = true
+                    isBPMFieldFocused = true
                 }
         }
     }
 
     private func commitBPM() {
         if let value = Int(bpmText) { viewModel.setBPM(value) }
+        isBPMFieldFocused = false
         isEditingBPM = false
     }
 

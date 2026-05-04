@@ -5,6 +5,7 @@ struct MetronomeCircularView: View {
     @Bindable var viewModel: MetronomeViewModel
     @State private var isEditingBPM = false
     @State private var bpmText = ""
+    @FocusState private var isBPMFieldFocused: Bool
 
     private var bpmProgress: Double {
         Double(viewModel.bpm - 40) / 200.0 // 40–240 range
@@ -54,6 +55,7 @@ struct MetronomeCircularView: View {
                 .font(.system(size: 48, weight: .bold, design: .rounded))
                 .multilineTextAlignment(.center)
                 .keyboardType(.numberPad)
+                .focused($isBPMFieldFocused)
                 .frame(width: 120)
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
@@ -68,12 +70,14 @@ struct MetronomeCircularView: View {
                 .onTapGesture {
                     bpmText = "\(viewModel.bpm)"
                     isEditingBPM = true
+                    isBPMFieldFocused = true
                 }
         }
     }
 
     private func commitBPM() {
         if let value = Int(bpmText) { viewModel.setBPM(value) }
+        isBPMFieldFocused = false
         isEditingBPM = false
     }
 

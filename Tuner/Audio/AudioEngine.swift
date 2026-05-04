@@ -28,6 +28,10 @@ final class AudioEngine: AudioEngineProtocol {
         let inputNode = engine.inputNode
         let format = inputNode.inputFormat(forBus: 0)
 
+        // Force lazy creation of the output graph (mixer → output) so the
+        // metronome can later attach a player to the already-running engine.
+        _ = engine.mainMixerNode
+
         inputNode.installTap(onBus: 0, bufferSize: bufferSize, format: format) { [weak self] buffer, _ in
             guard let channelData = buffer.floatChannelData?[0] else { return }
             let frames = Int(buffer.frameLength)
