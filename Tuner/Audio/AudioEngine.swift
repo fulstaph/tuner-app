@@ -1,4 +1,7 @@
 import AVFoundation
+import os.log
+
+private let audioLog = Logger(subsystem: "com.tunerapp", category: "AudioEngine")
 
 protocol AudioEngineProtocol: AnyObject {
     var onBuffer: (([Float]) -> Void)? { get set }
@@ -32,6 +35,8 @@ final class AudioEngine: AudioEngineProtocol {
         // metronome can later attach a player to the already-running engine.
         _ = engine.mainMixerNode
 
+        audioLog.info("AudioEngine: category=\(session.category.rawValue, privacy: .public) sampleRate=\(session.sampleRate) inputFormat=\(format, privacy: .public)")
+
         inputNode.installTap(onBus: 0, bufferSize: bufferSize, format: format) { [weak self] buffer, _ in
             guard let channelData = buffer.floatChannelData?[0] else { return }
             let frames = Int(buffer.frameLength)
@@ -40,7 +45,13 @@ final class AudioEngine: AudioEngineProtocol {
             self?.onBuffer?(samples)
         }
 
-        try engine.start()
+        do {
+            try engine.start()
+            audioLog.info("AudioEngine: engine started successfully, isRunning=\(self.engine.isRunning)")
+        } catch {
+            audioLog.error("AudioEngine: engine.start() failed: \(error, privacy: .public)")
+            throw error
+        }
     }
 
     func stop() {
