@@ -156,7 +156,7 @@ final class MetronomeEngine {
         if lastBeatTime > 0 && (now - lastBeatTime) > 2.0 {
             lastBeatTime = now
             currentBeat = 0
-            scheduleNextBeat()
+            if isPlaying { scheduleNextBeat() }
             return
         }
         lastBeatTime = now
@@ -172,6 +172,7 @@ final class MetronomeEngine {
         DispatchQueue.main.async { [weak self] in self?.onBeat?(beat) }
         currentBeat = (currentBeat + 1) % beatsPerMeasure
 
+        guard isPlaying else { return }
         scheduleNextBeat()
     }
 

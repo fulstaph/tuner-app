@@ -50,8 +50,12 @@ final class TunerViewModel {
 
     func start() {
         guard !isRunning else { return }
-        isRunning = true
-        try? audioEngine.start()
+        do {
+            try audioEngine.start()
+            isRunning = true
+        } catch {
+            isRunning = false
+        }
     }
 
     func stop() {
