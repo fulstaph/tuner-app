@@ -1,8 +1,12 @@
 import AVFoundation
+import os.log
+
+private let audioLog = Logger(subsystem: "com.tunerapp", category: "AudioEngine")
 
 protocol AudioEngineProtocol: AnyObject {
     var onBuffer: (([Float]) -> Void)? { get set }
     var sampleRate: Float { get }
+    var avAudioEngine: AVAudioEngine? { get }
     func start() throws
     func stop()
 }
@@ -17,13 +21,23 @@ final class AudioEngine: AudioEngineProtocol {
         Float(engine.inputNode.inputFormat(forBus: 0).sampleRate)
     }
 
+    var avAudioEngine: AVAudioEngine? { engine }
+
     func start() throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.record, mode: .measurement)
+        try session.setCategory(.playAndRecord, mode: .measurement, options: [.defaultToSpeaker])
         try session.setActive(true)
 
         let inputNode = engine.inputNode
         let format = inputNode.inputFormat(forBus: 0)
+
+        // Force lazy creation of the output graph (mixer → output) so the
+        // metronome can later attach a player to the already-running engine.
+        _ = engine.mainMixerNode
+
+        let cat = session.category.rawValue
+        let rate = session.sampleRate
+        audioLog.info("AudioEngine: category=\(cat, privacy: .public) rate=\(rate) fmt=\(format, privacy: .public)")
 
         inputNode.installTap(onBus: 0, bufferSize: bufferSize, format: format) { [weak self] buffer, _ in
             guard let channelData = buffer.floatChannelData?[0] else { return }
@@ -33,7 +47,13 @@ final class AudioEngine: AudioEngineProtocol {
             self?.onBuffer?(samples)
         }
 
-        try engine.start()
+        do {
+            try engine.start()
+            audioLog.info("AudioEngine: engine started successfully, isRunning=\(self.engine.isRunning)")
+        } catch {
+            audioLog.error("AudioEngine: engine.start() failed: \(error, privacy: .public)")
+            throw error
+        }
     }
 
     func stop() {

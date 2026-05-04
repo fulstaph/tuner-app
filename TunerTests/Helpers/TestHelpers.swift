@@ -1,3 +1,4 @@
+import AVFoundation
 import Foundation
 @testable import Tuner
 
@@ -21,6 +22,7 @@ enum TestHelpers {
 final class MockAudioEngine: AudioEngineProtocol {
     var onBuffer: (([Float]) -> Void)?
     let sampleRate: Float = 44100
+    var avAudioEngine: AVAudioEngine? { nil }
     var didStart = false
     var didStop = false
 

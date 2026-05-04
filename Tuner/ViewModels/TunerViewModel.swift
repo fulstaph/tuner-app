@@ -1,3 +1,4 @@
+import AVFoundation
 import SwiftUI
 
 @Observable
@@ -18,6 +19,9 @@ final class TunerViewModel {
 
     private let audioEngine: AudioEngineProtocol
     private let pitchDetector: PitchDetector
+    private var isRunning = false
+
+    var avAudioEngine: AVAudioEngine? { audioEngine.avAudioEngine }
 
     private var smoothedCents: Double = 0
     private let smoothingFactor: Double = 0.3
@@ -45,10 +49,18 @@ final class TunerViewModel {
     }
 
     func start() {
-        try? audioEngine.start()
+        guard !isRunning else { return }
+        do {
+            try audioEngine.start()
+            isRunning = true
+        } catch {
+            isRunning = false
+        }
     }
 
     func stop() {
+        guard isRunning else { return }
+        isRunning = false
         audioEngine.stop()
     }
 
