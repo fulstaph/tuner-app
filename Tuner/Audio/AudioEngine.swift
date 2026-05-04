@@ -3,6 +3,7 @@ import AVFoundation
 protocol AudioEngineProtocol: AnyObject {
     var onBuffer: (([Float]) -> Void)? { get set }
     var sampleRate: Float { get }
+    var avAudioEngine: AVAudioEngine? { get }
     func start() throws
     func stop()
 }
@@ -16,6 +17,8 @@ final class AudioEngine: AudioEngineProtocol {
     var sampleRate: Float {
         Float(engine.inputNode.inputFormat(forBus: 0).sampleRate)
     }
+
+    var avAudioEngine: AVAudioEngine? { engine }
 
     func start() throws {
         let session = AVAudioSession.sharedInstance()

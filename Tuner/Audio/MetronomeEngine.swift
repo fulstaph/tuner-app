@@ -2,15 +2,19 @@
 import AVFoundation
 
 final class MetronomeEngine {
-    private var audioEngine: AVAudioEngine?
     private var playerNode: AVAudioPlayerNode?
     private var scheduler: DispatchSourceTimer?
     private let schedulerQueue = DispatchQueue(label: "com.tunerapp.metronome.scheduler", qos: .userInteractive)
 
+    // Retained only when we created the engine ourselves
+    private var ownedEngine: AVAudioEngine?
+    // Weak reference when we borrowed the tuner's engine
+    private weak var borrowedEngine: AVAudioEngine?
+
     private var accentBuffer: AVAudioPCMBuffer?
     private var normalBuffer: AVAudioPCMBuffer?
 
-    // All fields below are only accessed on schedulerQueue after start()
+    // Written on main before scheduler starts, then only on schedulerQueue
     private var bpm: Int = 120
     private var nextBeatSampleTime: AVAudioFramePosition = -1
     private var currentBeat: Int = 0
@@ -20,15 +24,29 @@ final class MetronomeEngine {
     var onBeat: ((Int) -> Void)?
 
     @discardableResult
-    func start(bpm: Int, beatsPerMeasure: Int) -> Bool {
+    func start(bpm: Int, beatsPerMeasure: Int, externalEngine: AVAudioEngine? = nil) -> Bool {
         stop()
 
-        // Ensure the session supports output, regardless of whether the tuner has started.
-        // .playAndRecord bypasses the ringer switch; .soloAmbient (the default) does not.
         let session = AVAudioSession.sharedInstance()
-        if session.category != .playAndRecord {
-            try? session.setCategory(.playback, mode: .default)
-            try? session.setActive(true)
+
+        // Prefer the tuner's already-running engine to avoid two-engine conflicts on device.
+        let engine: AVAudioEngine
+        if let ext = externalEngine, ext.isRunning {
+            engine = ext
+            borrowedEngine = ext
+            ownedEngine = nil
+        } else {
+            // Fallback: own engine (e.g. mic permission denied, tuner not started yet).
+            // Ensure the session supports output — the default .soloAmbient is silenced
+            // by the hardware ringer switch.
+            if session.category != .playAndRecord {
+                try? session.setCategory(.playback, mode: .default)
+                try? session.setActive(true)
+            }
+            let newEngine = AVAudioEngine()
+            ownedEngine = newEngine
+            borrowedEngine = nil
+            engine = newEngine
         }
 
         let bufferRate = session.sampleRate > 0 ? session.sampleRate : 44100
@@ -37,25 +55,34 @@ final class MetronomeEngine {
         accentBuffer = accent
         normalBuffer = normal
 
+        let player = AVAudioPlayerNode()
+
+        if let ext = externalEngine, ext.isRunning {
+            // External engine already running: attach and start immediately
+            engine.attach(player)
+            engine.connect(player, to: engine.mainMixerNode, format: accent.format)
+            player.play()
+        } else if let owned = ownedEngine {
+            // Own engine: wire graph before starting so the engine sees the full graph
+            owned.attach(player)
+            owned.connect(player, to: owned.mainMixerNode, format: accent.format)
+            do {
+                try owned.start()
+            } catch {
+                ownedEngine = nil
+                return false
+            }
+            player.play()
+        } else {
+            return false
+        }
+
+        playerNode = player
+
         self.bpm = bpm
         self.beatsPerMeasure = beatsPerMeasure
         currentBeat = 0
         nextBeatSampleTime = -1
-
-        let engine = AVAudioEngine()
-        let player = AVAudioPlayerNode()
-        engine.attach(player)
-        engine.connect(player, to: engine.mainMixerNode, format: accent.format)
-
-        do {
-            try engine.start()
-        } catch {
-            return false
-        }
-
-        player.play()
-        audioEngine = engine
-        playerNode = player
         isPlaying = true
 
         startScheduler()
@@ -65,10 +92,18 @@ final class MetronomeEngine {
     func stop() {
         scheduler?.cancel()
         scheduler = nil
-        playerNode?.stop()
-        audioEngine?.stop()
-        audioEngine = nil
+
+        if let player = playerNode {
+            player.stop()
+            // Detach from whichever engine holds the player
+            (ownedEngine ?? borrowedEngine)?.detach(player)
+        }
         playerNode = nil
+
+        ownedEngine?.stop()
+        ownedEngine = nil
+        borrowedEngine = nil
+
         isPlaying = false
     }
 
@@ -95,12 +130,12 @@ final class MetronomeEngine {
     }
 
     private func scheduleBeats() {
-        guard let player = playerNode, let engine = audioEngine, engine.isRunning else { return }
+        guard let player = playerNode else { return }
+        let engine = ownedEngine ?? borrowedEngine
+        guard let engine, engine.isRunning else { return }
         guard let nodeTime = player.lastRenderTime, nodeTime.isSampleTimeValid else { return }
         guard let accentBuf = accentBuffer, let normalBuf = normalBuffer else { return }
 
-        // Use the hardware sample rate from the render clock, not the buffer rate.
-        // On iPhones this is often 48000 Hz; on the simulator it matches the buffer rate.
         let rate = nodeTime.sampleRate
 
         if nextBeatSampleTime < 0 {
@@ -113,13 +148,8 @@ final class MetronomeEngine {
 
         while nextBeatSampleTime < deadline {
             let buffer = currentBeat == 0 ? accentBuf : normalBuf
-
-            // extrapolateTime produces an AVAudioTime with a valid host time, which the
-            // player node can compare against its render clock without any rate ambiguity.
-            // Fall back to a sample-time-only AVAudioTime if host time isn't available.
             let beatSampleTime = AVAudioTime(sampleTime: nextBeatSampleTime, atRate: rate)
-            let beatTime = beatSampleTime.extrapolateTime(fromAnchor: nodeTime)
-                ?? beatSampleTime
+            let beatTime = beatSampleTime.extrapolateTime(fromAnchor: nodeTime) ?? beatSampleTime
             player.scheduleBuffer(buffer, at: beatTime, options: [])
 
             let beat = currentBeat

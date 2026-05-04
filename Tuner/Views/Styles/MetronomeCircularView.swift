@@ -3,6 +3,8 @@ import SwiftUI
 
 struct MetronomeCircularView: View {
     @Bindable var viewModel: MetronomeViewModel
+    @State private var isEditingBPM = false
+    @State private var bpmText = ""
 
     private var bpmProgress: Double {
         Double(viewModel.bpm - 40) / 200.0 // 40–240 range
@@ -34,9 +36,7 @@ struct MetronomeCircularView: View {
                 .animation(.easeOut(duration: 0.2), value: bpmProgress)
 
             VStack(spacing: 2) {
-                Text("\(viewModel.bpm)")
-                    .font(.system(size: 48, weight: .bold, design: .rounded))
-                    .contentTransition(.numericText())
+                bpmDisplay
                 Text("BPM")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
@@ -45,6 +45,36 @@ struct MetronomeCircularView: View {
             }
         }
         .frame(width: 180, height: 180)
+    }
+
+    @ViewBuilder
+    private var bpmDisplay: some View {
+        if isEditingBPM {
+            TextField("BPM", text: $bpmText)
+                .font(.system(size: 48, weight: .bold, design: .rounded))
+                .multilineTextAlignment(.center)
+                .keyboardType(.numberPad)
+                .frame(width: 120)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") { commitBPM() }
+                    }
+                }
+        } else {
+            Text("\(viewModel.bpm)")
+                .font(.system(size: 48, weight: .bold, design: .rounded))
+                .contentTransition(.numericText())
+                .onTapGesture {
+                    bpmText = "\(viewModel.bpm)"
+                    isEditingBPM = true
+                }
+        }
+    }
+
+    private func commitBPM() {
+        if let value = Int(bpmText) { viewModel.setBPM(value) }
+        isEditingBPM = false
     }
 
     private var beatSquares: some View {

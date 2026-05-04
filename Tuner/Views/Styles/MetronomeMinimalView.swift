@@ -3,15 +3,15 @@ import SwiftUI
 
 struct MetronomeMinimalView: View {
     @Bindable var viewModel: MetronomeViewModel
+    @State private var isEditingBPM = false
+    @State private var bpmText = ""
 
     var body: some View {
         VStack(spacing: 40) {
             beatIndicators
 
             VStack(spacing: 4) {
-                Text("\(viewModel.bpm)")
-                    .font(.system(size: 64, weight: .bold, design: .rounded))
-                    .contentTransition(.numericText())
+                bpmDisplay
                 Text("BPM")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -27,6 +27,35 @@ struct MetronomeMinimalView: View {
             }
             .padding(.horizontal)
         }
+    }
+
+    @ViewBuilder
+    private var bpmDisplay: some View {
+        if isEditingBPM {
+            TextField("BPM", text: $bpmText)
+                .font(.system(size: 64, weight: .bold, design: .rounded))
+                .multilineTextAlignment(.center)
+                .keyboardType(.numberPad)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") { commitBPM() }
+                    }
+                }
+        } else {
+            Text("\(viewModel.bpm)")
+                .font(.system(size: 64, weight: .bold, design: .rounded))
+                .contentTransition(.numericText())
+                .onTapGesture {
+                    bpmText = "\(viewModel.bpm)"
+                    isEditingBPM = true
+                }
+        }
+    }
+
+    private func commitBPM() {
+        if let value = Int(bpmText) { viewModel.setBPM(value) }
+        isEditingBPM = false
     }
 
     private var beatIndicators: some View {

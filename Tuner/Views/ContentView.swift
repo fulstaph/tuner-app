@@ -43,7 +43,10 @@ struct ContentView: View {
                 Label("Metronome", systemImage: "metronome")
             }
         }
-        .onAppear { tunerViewModel.start() }
+        .onAppear {
+            tunerViewModel.start()
+            metronomeViewModel.externalAudioEngine = tunerViewModel.avAudioEngine
+        }
         .onDisappear { tunerViewModel.stop() }
         .sheet(isPresented: $showSettings) {
             NavigationStack {
