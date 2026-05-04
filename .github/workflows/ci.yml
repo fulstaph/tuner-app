@@ -18,7 +18,9 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode_16.3.app
 
       - name: Install tools
-        run: brew install xcodegen swiftlint
+        run: |
+          brew install xcodegen swiftlint
+          gem install xcpretty
 
       - name: Generate Xcode project
         run: xcodegen

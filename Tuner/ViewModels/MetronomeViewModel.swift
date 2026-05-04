@@ -28,6 +28,10 @@ final class MetronomeViewModel {
         engine.onBeat = { [weak self] beat in
             self?.currentBeat = beat
         }
+        engine.onStop = { [weak self] in
+            self?.isPlaying = false
+            self?.currentBeat = 0
+        }
     }
 
     func toggle() {

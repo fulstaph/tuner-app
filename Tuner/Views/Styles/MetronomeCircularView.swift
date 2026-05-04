@@ -3,13 +3,9 @@ import SwiftUI
 
 struct MetronomeCircularView: View {
     @Bindable var viewModel: MetronomeViewModel
-    @State private var isEditingBPM = false
-    @State private var bpmText = ""
-    @State private var showInvalidBPM = false
-    @FocusState private var isBPMFieldFocused: Bool
 
     private var bpmProgress: Double {
-        Double(viewModel.bpm - 40) / 200.0 // 40–240 range
+        Double(viewModel.bpm - 40) / 200.0
     }
 
     var body: some View {
@@ -37,105 +33,35 @@ struct MetronomeCircularView: View {
                 .rotationEffect(.degrees(-90))
                 .animation(.easeOut(duration: 0.2), value: bpmProgress)
 
-            VStack(spacing: 2) {
-                bpmDisplay
-                Text(showInvalidBPM ? "40 – 240" : "BPM")
-                    .font(.caption2)
-                    .foregroundStyle(showInvalidBPM ? .red : .secondary)
-                    .textCase(.uppercase)
-                    .kerning(2)
-                    .animation(.easeOut(duration: 0.2), value: showInvalidBPM)
-            }
+            BPMEditField(bpm: bpmBinding, fontSize: 48, fieldWidth: 120)
         }
         .frame(width: 180, height: 180)
-    }
-
-    @ViewBuilder
-    private var bpmDisplay: some View {
-        if isEditingBPM {
-            VStack(spacing: 6) {
-                TextField("BPM", text: $bpmText)
-                    .font(.system(size: 48, weight: .bold, design: .rounded))
-                    .multilineTextAlignment(.center)
-                    .keyboardType(.numberPad)
-                    .focused($isBPMFieldFocused)
-                    .frame(width: 120)
-                    .foregroundColor(bpmTextIsValid ? .primary : .red)
-                    .onChange(of: bpmText) { sanitizeBPMText() }
-
-                HStack(spacing: 20) {
-                    Button { cancelBPM() } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title3)
-                            .foregroundStyle(.secondary)
-                    }
-                    Button { commitBPM() } label: {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.title3)
-                            .foregroundStyle(.green)
-                    }
-                }
-            }
-        } else {
-            Text("\(viewModel.bpm)")
-                .font(.system(size: 48, weight: .bold, design: .rounded))
-                .contentTransition(.numericText())
-                .onTapGesture {
-                    bpmText = "\(viewModel.bpm)"
-                    showInvalidBPM = false
-                    isEditingBPM = true
-                    isBPMFieldFocused = true
-                }
-        }
-    }
-
-    private var bpmTextIsValid: Bool {
-        guard let value = Int(bpmText) else { return bpmText.isEmpty }
-        return (40...240).contains(value)
-    }
-
-    private func sanitizeBPMText() {
-        let stripped = String(bpmText.drop(while: { $0 == "0" }))
-        if stripped != bpmText {
-            bpmText = stripped.isEmpty && !bpmText.isEmpty ? "" : stripped
-        }
-        if bpmText.count > 3 {
-            bpmText = String(bpmText.prefix(3))
-        }
-        showInvalidBPM = false
-    }
-
-    private func commitBPM() {
-        if let value = Int(bpmText), (40...240).contains(value) {
-            viewModel.setBPM(value)
-            isBPMFieldFocused = false
-            isEditingBPM = false
-            showInvalidBPM = false
-        } else {
-            showInvalidBPM = true
-        }
-    }
-
-    private func cancelBPM() {
-        isBPMFieldFocused = false
-        isEditingBPM = false
-        showInvalidBPM = false
     }
 
     private var beatSquares: some View {
         HStack(spacing: 8) {
             ForEach(0..<viewModel.timeSignature.beatsPerMeasure, id: \.self) { beat in
                 RoundedRectangle(cornerRadius: 6)
-                    .fill(beat == viewModel.currentBeat && viewModel.isPlaying ? Color.green : Color(.systemGray5))
+                    .fill(beatColor(beat))
                     .frame(width: 32, height: 32)
                     .overlay {
                         Text("\(beat + 1)")
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(beat == viewModel.currentBeat && viewModel.isPlaying ? .white : .primary)
+                            .foregroundStyle(beatTextColor(beat))
                     }
                     .animation(.easeOut(duration: 0.15), value: viewModel.currentBeat)
             }
         }
+    }
+
+    private func beatColor(_ beat: Int) -> Color {
+        beat == viewModel.currentBeat && viewModel.isPlaying
+            ? Color.green : Color(.systemGray5)
+    }
+
+    private func beatTextColor(_ beat: Int) -> Color {
+        beat == viewModel.currentBeat && viewModel.isPlaying
+            ? .white : .primary
     }
 
     private var controlRow: some View {
@@ -164,7 +90,10 @@ struct MetronomeCircularView: View {
                     .font(.title3)
                     .foregroundStyle(.white)
                     .frame(width: 44, height: 44)
-                    .background(viewModel.isPlaying ? Color.red : Color.green, in: Circle())
+                    .background(
+                        viewModel.isPlaying ? Color.red : Color.green,
+                        in: Circle()
+                    )
             }
 
             Button(action: { viewModel.setBPM(viewModel.bpm + 1) }) {
@@ -182,5 +111,12 @@ struct MetronomeCircularView: View {
                     .background(Color(.systemGray5), in: RoundedRectangle(cornerRadius: 8))
             }
         }
+    }
+
+    private var bpmBinding: Binding<Int> {
+        Binding(
+            get: { viewModel.bpm },
+            set: { viewModel.setBPM($0) }
+        )
     }
 }

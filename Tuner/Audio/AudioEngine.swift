@@ -35,7 +35,9 @@ final class AudioEngine: AudioEngineProtocol {
         // metronome can later attach a player to the already-running engine.
         _ = engine.mainMixerNode
 
-        audioLog.info("AudioEngine: category=\(session.category.rawValue, privacy: .public) sampleRate=\(session.sampleRate) inputFormat=\(format, privacy: .public)")
+        let cat = session.category.rawValue
+        let rate = session.sampleRate
+        audioLog.info("AudioEngine: category=\(cat, privacy: .public) rate=\(rate) fmt=\(format, privacy: .public)")
 
         inputNode.installTap(onBus: 0, bufferSize: bufferSize, format: format) { [weak self] buffer, _ in
             guard let channelData = buffer.floatChannelData?[0] else { return }
