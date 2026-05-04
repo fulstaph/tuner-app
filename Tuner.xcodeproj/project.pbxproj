@@ -8,8 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		095EED5FDA9FB934B63EB27E /* NoteMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF51900E7EC8F5449EBD4E8 /* NoteMapperTests.swift */; };
+		0A614A9180846A484DE6DA6B /* MetronomeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11EF360B5810D185F59E9516 /* MetronomeViewModelTests.swift */; };
 		0B66942CCF62B1D5B713F3AE /* TunerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86C6402B0CFE0A23F82A3D2B /* TunerViewModelTests.swift */; };
 		0E0CD830A4F8D99C343F8153 /* TunerDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1E7673F68DCD65713DE2C3 /* TunerDisplayView.swift */; };
+		198576D595FB50DDCA30E5ED /* MetronomeModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB4D19212D14BBF05628A49 /* MetronomeModelTests.swift */; };
 		1ECD5C08B1DFC18EE0706BBA /* TunerStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB60FBAB022418113C7C546 /* TunerStyle.swift */; };
 		233F888933D78DCF23F9AA03 /* TunerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7649DED303EC43E58FEC51D1 /* TunerApp.swift */; };
 		2B83620036A3D06FE5AEF1E1 /* PitchDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = E419701774EEDE7BE0F75E8B /* PitchDetector.swift */; };
@@ -19,14 +21,21 @@
 		64AD72BD404D8DF110723992 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D0996940C561EC6F79C19 /* ContentView.swift */; };
 		6E6BB9749F8B34C3FFC8CAA1 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8DDC0D0F9CCABEF6F19DFA /* AudioEngine.swift */; };
 		7338383E30297DC70A385362 /* PitchDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106BFA760C31343F40488373 /* PitchDetectorTests.swift */; };
+		74DB646BA8AEA013C25CE251 /* ToneGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491ECF255DED3BA3E4EB3C49 /* ToneGeneratorTests.swift */; };
 		805350DF97F355A9677AEEE0 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06926F8F07FB1EC71C2268FF /* SettingsView.swift */; };
 		822365E42B9BCF014385C89B /* InstrumentPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F7EE329D1EB5B8EA651261 /* InstrumentPreset.swift */; };
+		A515832E59DCAAECF3CC3390 /* MetronomeStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C7F2797EA858F4DF52FC84 /* MetronomeStyle.swift */; };
 		AC42EF4380495CB710DEA135 /* TunerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E8136491ED340A92ABAC8E /* TunerData.swift */; };
 		B0FE1653079F88C37FC7DD58 /* MinimalistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63873201B76E00CCDA348DC /* MinimalistView.swift */; };
+		B95AC6C89FF60E371AE87286 /* MetronomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE805DEF609E570A2B04609 /* MetronomeViewModel.swift */; };
 		BECCDFFF41B62A0A0AFF6AA6 /* NeedleGaugeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BF44E271F581CA31AF1FE9B /* NeedleGaugeView.swift */; };
+		C543A43846DCA07EE5A08817 /* ToneGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B1135CD079DAF66A7F168B /* ToneGenerator.swift */; };
+		C55000D2E1C0F2DA9FE8C233 /* TimeSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A03A39B33D980FD50D084CD /* TimeSignature.swift */; };
 		CF9FCFAA672BCA4C1EF5C7E8 /* NoteMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E626B4080154DED88222CC87 /* NoteMapper.swift */; };
+		D48B3204E992D978725CD135 /* MetronomeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323D72945375422B83879688 /* MetronomeEngine.swift */; };
 		DA5A478750EEC24D664245D2 /* TunerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97E2F6537CFA7F0EACD73C5 /* TunerUITests.swift */; };
 		DC9DD0CC314BE54737608192 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97EC35051D44F87E0B052EB6 /* Assets.xcassets */; };
+		E10E6F32F9B1D378D082D6AF /* MetronomeEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B5B8BD960A4D8010564F09 /* MetronomeEngineTests.swift */; };
 		F502666FCAC35197082DB021 /* TunerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD08A8F1F2C9FDD4E6002DEC /* TunerViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -51,17 +60,26 @@
 		06926F8F07FB1EC71C2268FF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		09E8136491ED340A92ABAC8E /* TunerData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerData.swift; sourceTree = "<group>"; };
 		106BFA760C31343F40488373 /* PitchDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PitchDetectorTests.swift; sourceTree = "<group>"; };
+		11EF360B5810D185F59E9516 /* MetronomeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeViewModelTests.swift; sourceTree = "<group>"; };
 		179BE42D209E35F0CA4C708E /* LinearBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearBarView.swift; sourceTree = "<group>"; };
 		28E2D899808D2D2F3D3EAD66 /* TunerUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TunerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A8DDC0D0F9CCABEF6F19DFA /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
+		30B1135CD079DAF66A7F168B /* ToneGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToneGenerator.swift; sourceTree = "<group>"; };
+		323D72945375422B83879688 /* MetronomeEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeEngine.swift; sourceTree = "<group>"; };
 		370D0996940C561EC6F79C19 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3BF44E271F581CA31AF1FE9B /* NeedleGaugeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeedleGaugeView.swift; sourceTree = "<group>"; };
+		491ECF255DED3BA3E4EB3C49 /* ToneGeneratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToneGeneratorTests.swift; sourceTree = "<group>"; };
+		4AE805DEF609E570A2B04609 /* MetronomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeViewModel.swift; sourceTree = "<group>"; };
 		592D2925DFF1459934130DF4 /* TunerDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerDataTests.swift; sourceTree = "<group>"; };
+		6BB4D19212D14BBF05628A49 /* MetronomeModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeModelTests.swift; sourceTree = "<group>"; };
 		744110E5BDAA2F5933655C41 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		7649DED303EC43E58FEC51D1 /* TunerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerApp.swift; sourceTree = "<group>"; };
 		86C6402B0CFE0A23F82A3D2B /* TunerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerViewModelTests.swift; sourceTree = "<group>"; };
 		97EC35051D44F87E0B052EB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9A03A39B33D980FD50D084CD /* TimeSignature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSignature.swift; sourceTree = "<group>"; };
+		A5B5B8BD960A4D8010564F09 /* MetronomeEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeEngineTests.swift; sourceTree = "<group>"; };
 		ADF51900E7EC8F5449EBD4E8 /* NoteMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMapperTests.swift; sourceTree = "<group>"; };
+		B4C7F2797EA858F4DF52FC84 /* MetronomeStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeStyle.swift; sourceTree = "<group>"; };
 		BD08A8F1F2C9FDD4E6002DEC /* TunerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerViewModel.swift; sourceTree = "<group>"; };
 		C63873201B76E00CCDA348DC /* MinimalistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimalistView.swift; sourceTree = "<group>"; };
 		C97E2F6537CFA7F0EACD73C5 /* TunerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerUITests.swift; sourceTree = "<group>"; };
@@ -72,7 +90,7 @@
 		E626B4080154DED88222CC87 /* NoteMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMapper.swift; sourceTree = "<group>"; };
 		EFB60FBAB022418113C7C546 /* TunerStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerStyle.swift; sourceTree = "<group>"; };
 		FA1E7673F68DCD65713DE2C3 /* TunerDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerDisplayView.swift; sourceTree = "<group>"; };
-		FD414E3FDE1B48E6636CC07D /* Tuner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD414E3FDE1B48E6636CC07D /* Tuner.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Tuner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -134,6 +152,8 @@
 			isa = PBXGroup;
 			children = (
 				E4F7EE329D1EB5B8EA651261 /* InstrumentPreset.swift */,
+				B4C7F2797EA858F4DF52FC84 /* MetronomeStyle.swift */,
+				9A03A39B33D980FD50D084CD /* TimeSignature.swift */,
 				09E8136491ED340A92ABAC8E /* TunerData.swift */,
 				EFB60FBAB022418113C7C546 /* TunerStyle.swift */,
 			);
@@ -151,6 +171,7 @@
 		947207CF4B9FC5831446F342 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				4AE805DEF609E570A2B04609 /* MetronomeViewModel.swift */,
 				BD08A8F1F2C9FDD4E6002DEC /* TunerViewModel.swift */,
 			);
 			path = ViewModels;
@@ -178,7 +199,9 @@
 			isa = PBXGroup;
 			children = (
 				2A8DDC0D0F9CCABEF6F19DFA /* AudioEngine.swift */,
+				323D72945375422B83879688 /* MetronomeEngine.swift */,
 				E419701774EEDE7BE0F75E8B /* PitchDetector.swift */,
+				30B1135CD079DAF66A7F168B /* ToneGenerator.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -186,8 +209,12 @@
 		E9BDACA8535C545A87431536 /* TunerTests */ = {
 			isa = PBXGroup;
 			children = (
+				A5B5B8BD960A4D8010564F09 /* MetronomeEngineTests.swift */,
+				6BB4D19212D14BBF05628A49 /* MetronomeModelTests.swift */,
+				11EF360B5810D185F59E9516 /* MetronomeViewModelTests.swift */,
 				ADF51900E7EC8F5449EBD4E8 /* NoteMapperTests.swift */,
 				106BFA760C31343F40488373 /* PitchDetectorTests.swift */,
+				491ECF255DED3BA3E4EB3C49 /* ToneGeneratorTests.swift */,
 				592D2925DFF1459934130DF4 /* TunerDataTests.swift */,
 				86C6402B0CFE0A23F82A3D2B /* TunerViewModelTests.swift */,
 				EA6504BCFA8ABEF0B07D0713 /* Helpers */,
@@ -311,9 +338,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E10E6F32F9B1D378D082D6AF /* MetronomeEngineTests.swift in Sources */,
+				198576D595FB50DDCA30E5ED /* MetronomeModelTests.swift in Sources */,
+				0A614A9180846A484DE6DA6B /* MetronomeViewModelTests.swift in Sources */,
 				095EED5FDA9FB934B63EB27E /* NoteMapperTests.swift in Sources */,
 				7338383E30297DC70A385362 /* PitchDetectorTests.swift in Sources */,
 				5473FB6707AF79CEBDF4FDDC /* TestHelpers.swift in Sources */,
+				74DB646BA8AEA013C25CE251 /* ToneGeneratorTests.swift in Sources */,
 				3F95DD766C4AB8DD1EF1DF53 /* TunerDataTests.swift in Sources */,
 				0B66942CCF62B1D5B713F3AE /* TunerViewModelTests.swift in Sources */,
 			);
@@ -335,11 +366,16 @@
 				64AD72BD404D8DF110723992 /* ContentView.swift in Sources */,
 				822365E42B9BCF014385C89B /* InstrumentPreset.swift in Sources */,
 				3BC895AC96AF63D9014BF427 /* LinearBarView.swift in Sources */,
+				D48B3204E992D978725CD135 /* MetronomeEngine.swift in Sources */,
+				A515832E59DCAAECF3CC3390 /* MetronomeStyle.swift in Sources */,
+				B95AC6C89FF60E371AE87286 /* MetronomeViewModel.swift in Sources */,
 				B0FE1653079F88C37FC7DD58 /* MinimalistView.swift in Sources */,
 				BECCDFFF41B62A0A0AFF6AA6 /* NeedleGaugeView.swift in Sources */,
 				CF9FCFAA672BCA4C1EF5C7E8 /* NoteMapper.swift in Sources */,
 				2B83620036A3D06FE5AEF1E1 /* PitchDetector.swift in Sources */,
 				805350DF97F355A9677AEEE0 /* SettingsView.swift in Sources */,
+				C55000D2E1C0F2DA9FE8C233 /* TimeSignature.swift in Sources */,
+				C543A43846DCA07EE5A08817 /* ToneGenerator.swift in Sources */,
 				233F888933D78DCF23F9AA03 /* TunerApp.swift in Sources */,
 				AC42EF4380495CB710DEA135 /* TunerData.swift in Sources */,
 				0E0CD830A4F8D99C343F8153 /* TunerDisplayView.swift in Sources */,
@@ -505,7 +541,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = FJ3DK4V4YS;
 				INFOPLIST_FILE = Tuner/App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -556,7 +591,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = FJ3DK4V4YS;
 				INFOPLIST_FILE = Tuner/App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
