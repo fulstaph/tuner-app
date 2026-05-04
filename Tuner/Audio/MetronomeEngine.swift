@@ -33,27 +33,20 @@ final class MetronomeEngine {
         stop()
 
         let session = AVAudioSession.sharedInstance()
-        metLog.info("MetronomeEngine.start: bpm=\(bpm) beats=\(beatsPerMeasure) externalEngine=\(externalEngine != nil ? "provided" : "nil", privacy: .public)")
-        metLog.info("MetronomeEngine.start: session.category=\(session.category.rawValue, privacy: .public) sampleRate=\(session.sampleRate)")
+        metLog.info("start: bpm=\(bpm) beats=\(beatsPerMeasure) externalEngine=\(externalEngine != nil ? "provided" : "nil", privacy: .public)")
+        metLog.info("start: session.category=\(session.category.rawValue, privacy: .public) sampleRate=\(session.sampleRate)")
 
-        // Prefer the tuner's already-running engine to avoid two-engine conflicts on device.
         let engine: AVAudioEngine
         if let ext = externalEngine, ext.isRunning {
-            metLog.info("MetronomeEngine.start: using external (borrowed) engine, isRunning=\(ext.isRunning)")
+            metLog.info("start: using borrowed engine")
             engine = ext
             borrowedEngine = ext
             ownedEngine = nil
         } else {
-            if let ext = externalEngine {
-                metLog.warning("MetronomeEngine.start: external engine provided but isRunning=false — falling back to owned engine")
-            } else {
-                metLog.info("MetronomeEngine.start: no external engine — creating owned engine")
+            if externalEngine != nil {
+                metLog.warning("start: external engine not running — falling back to owned engine")
             }
-            // Fallback: own engine (e.g. mic permission denied, tuner not started yet).
-            // Ensure the session supports output — the default .soloAmbient is silenced
-            // by the hardware ringer switch.
             if session.category != .playAndRecord {
-                metLog.info("MetronomeEngine.start: setting session category to .playback")
                 try? session.setCategory(.playback, mode: .default)
                 try? session.setActive(true)
             }
@@ -64,39 +57,33 @@ final class MetronomeEngine {
         }
 
         let bufferRate = session.sampleRate > 0 ? session.sampleRate : 44100
-        metLog.info("MetronomeEngine.start: bufferRate=\(bufferRate)")
         let accent = ToneGenerator.makeClickBuffer(frequency: 880, duration: 0.03, sampleRate: bufferRate)
         let normal = ToneGenerator.makeClickBuffer(frequency: 660, duration: 0.03, sampleRate: bufferRate)
-        metLog.info("MetronomeEngine.start: accent buffer frameLength=\(accent.frameLength) format=\(accent.format, privacy: .public)")
+        metLog.info("start: bufferRate=\(bufferRate) accent frameLength=\(accent.frameLength)")
         accentBuffer = accent
         normalBuffer = normal
 
         let player = AVAudioPlayerNode()
 
         if let ext = externalEngine, ext.isRunning {
-            // External engine already running: attach and start immediately
-            metLog.info("MetronomeEngine.start: attaching player to borrowed engine")
             engine.attach(player)
             engine.connect(player, to: engine.mainMixerNode, format: accent.format)
             player.play()
-            metLog.info("MetronomeEngine.start: player.play() called on borrowed engine, player.isPlaying=\(player.isPlaying)")
+            metLog.info("start: player attached to borrowed engine, isPlaying=\(player.isPlaying)")
         } else if let owned = ownedEngine {
-            // Own engine: wire graph before starting so the engine sees the full graph
-            metLog.info("MetronomeEngine.start: attaching player to owned engine")
             owned.attach(player)
             owned.connect(player, to: owned.mainMixerNode, format: accent.format)
             do {
                 try owned.start()
-                metLog.info("MetronomeEngine.start: owned engine started, isRunning=\(owned.isRunning)")
             } catch {
-                metLog.error("MetronomeEngine.start: owned engine.start() failed: \(error, privacy: .public)")
+                metLog.error("start: owned engine failed: \(error, privacy: .public)")
                 ownedEngine = nil
                 return false
             }
             player.play()
-            metLog.info("MetronomeEngine.start: player.play() called on owned engine, player.isPlaying=\(player.isPlaying)")
+            metLog.info("start: player attached to owned engine, isPlaying=\(player.isPlaying)")
         } else {
-            metLog.error("MetronomeEngine.start: no engine available — aborting")
+            metLog.error("start: no engine available")
             return false
         }
 
@@ -109,7 +96,6 @@ final class MetronomeEngine {
         scheduleCallCount = 0
         isPlaying = true
 
-        metLog.info("MetronomeEngine.start: starting scheduler")
         startScheduler()
         return true
     }
@@ -120,7 +106,6 @@ final class MetronomeEngine {
 
         if let player = playerNode {
             player.stop()
-            // Detach from whichever engine holds the player
             (ownedEngine ?? borrowedEngine)?.detach(player)
         }
         playerNode = nil
@@ -130,7 +115,6 @@ final class MetronomeEngine {
         borrowedEngine = nil
 
         isPlaying = false
-        metLog.info("MetronomeEngine.stop: stopped")
     }
 
     func updateTempo(bpm: Int) {
@@ -159,56 +143,70 @@ final class MetronomeEngine {
         scheduleCallCount += 1
         let callNum = scheduleCallCount
 
-        guard let player = playerNode else {
-            if callNum <= 3 { metLog.warning("MetronomeEngine.scheduleBeats[\(callNum)]: playerNode is nil — returning") }
-            return
-        }
+        guard let player = playerNode else { return }
         let engine = ownedEngine ?? borrowedEngine
-        guard let engine, engine.isRunning else {
-            if callNum <= 3 { metLog.warning("MetronomeEngine.scheduleBeats[\(callNum)]: engine nil or not running (isRunning=\(engine?.isRunning ?? false)) — returning") }
-            return
-        }
-        guard let accentBuf = accentBuffer, let normalBuf = normalBuffer else {
-            if callNum <= 3 { metLog.warning("MetronomeEngine.scheduleBeats[\(callNum)]: buffers nil — returning") }
+        guard let engine, engine.isRunning else { return }
+        guard let accentBuf = accentBuffer, let normalBuf = normalBuffer else { return }
+
+        // First call: always play immediately with at:nil so the user hears a click instantly
+        if nextBeatSampleTime < 0 {
+            let buffer = currentBeat == 0 ? accentBuf : normalBuf
+            player.scheduleBuffer(buffer, at: nil, options: [])
+            metLog.info("scheduleBeats[\(callNum)]: first beat scheduled with at:nil")
+
+            let beat = currentBeat
+            DispatchQueue.main.async { [weak self] in self?.onBeat?(beat) }
+            currentBeat = (currentBeat + 1) % beatsPerMeasure
+
+            if let nodeTime = player.lastRenderTime, nodeTime.isSampleTimeValid {
+                let rate = nodeTime.sampleRate
+                let samplesPerBeat = AVAudioFramePosition(rate * 60.0 / Double(bpm))
+                nextBeatSampleTime = nodeTime.sampleTime + samplesPerBeat
+                metLog.info("scheduleBeats[\(callNum)]: anchored nextBeat=\(self.nextBeatSampleTime) rate=\(rate)")
+            } else {
+                nextBeatSampleTime = 0
+                metLog.info("scheduleBeats[\(callNum)]: lastRenderTime not yet valid, will anchor on next tick")
+            }
             return
         }
 
         guard let nodeTime = player.lastRenderTime, nodeTime.isSampleTimeValid else {
-            if callNum <= 5 {
-                metLog.info("MetronomeEngine.scheduleBeats[\(callNum)]: lastRenderTime invalid (isSampleTimeValid=false), nextBeatSampleTime=\(self.nextBeatSampleTime)")
-            }
-            // lastRenderTime not valid yet — bootstrap by playing the first beat immediately
-            if nextBeatSampleTime < 0 {
-                metLog.info("MetronomeEngine.scheduleBeats[\(callNum)]: BOOTSTRAP — scheduling first beat with at:nil")
-                let buffer = currentBeat == 0 ? accentBuf : normalBuf
-                player.scheduleBuffer(buffer, at: nil, options: [])
-                let beat = currentBeat
-                DispatchQueue.main.async { [weak self] in self?.onBeat?(beat) }
-                currentBeat = (currentBeat + 1) % beatsPerMeasure
-                nextBeatSampleTime = 0
-            }
             return
         }
 
         let rate = nodeTime.sampleRate
+        let samplesPerBeat = AVAudioFramePosition(rate * 60.0 / Double(bpm))
 
-        // After bootstrap, anchor next beat one interval from current position
-        if nextBeatSampleTime <= 0 {
-            let samplesPerBeat = AVAudioFramePosition(rate * 60.0 / Double(bpm))
+        // Anchor if we were bootstrapped without a valid render time
+        if nextBeatSampleTime == 0 {
             nextBeatSampleTime = nodeTime.sampleTime + samplesPerBeat
-            metLog.info("MetronomeEngine.scheduleBeats[\(callNum)]: anchoring after bootstrap, rate=\(rate) sampleTime=\(nodeTime.sampleTime) nextBeat=\(self.nextBeatSampleTime)")
         }
 
-        let lookAheadSamples = AVAudioFramePosition(rate * 0.1) // 100ms
+        // Skip past beats — never schedule in the past
+        var skipped = 0
+        while nextBeatSampleTime < nodeTime.sampleTime {
+            currentBeat = (currentBeat + 1) % beatsPerMeasure
+            nextBeatSampleTime += samplesPerBeat
+            skipped += 1
+        }
+        if skipped > 0 && callNum <= 10 {
+            metLog.warning("scheduleBeats[\(callNum)]: skipped \(skipped) past beat(s)")
+        }
+
+        let lookAheadSamples = AVAudioFramePosition(rate * 0.1)
         let deadline = nodeTime.sampleTime + lookAheadSamples
-        let samplesPerBeat = AVAudioFramePosition(rate * 60.0 / Double(bpm))
 
         var scheduled = 0
         while nextBeatSampleTime < deadline {
             let buffer = currentBeat == 0 ? accentBuf : normalBuf
             let beatSampleTime = AVAudioTime(sampleTime: nextBeatSampleTime, atRate: rate)
-            let beatTime = beatSampleTime.extrapolateTime(fromAnchor: nodeTime) ?? beatSampleTime
-            player.scheduleBuffer(buffer, at: beatTime, options: [])
+
+            if let beatTime = beatSampleTime.extrapolateTime(fromAnchor: nodeTime) {
+                player.scheduleBuffer(buffer, at: beatTime, options: [])
+            } else {
+                metLog.warning("scheduleBeats[\(callNum)]: extrapolateTime returned nil, using at:nil")
+                player.scheduleBuffer(buffer, at: nil, options: [])
+            }
 
             let beat = currentBeat
             let delaySeconds = Double(nextBeatSampleTime - nodeTime.sampleTime) / rate
@@ -222,7 +220,7 @@ final class MetronomeEngine {
         }
 
         if scheduled > 0 && callNum <= 10 {
-            metLog.info("MetronomeEngine.scheduleBeats[\(callNum)]: scheduled \(scheduled) beat(s), rate=\(rate) bpm=\(self.bpm)")
+            metLog.info("scheduleBeats[\(callNum)]: scheduled \(scheduled) beat(s), bpm=\(self.bpm)")
         }
     }
 }
