@@ -36,7 +36,7 @@ final class MetronomeViewModel {
     }
 
     func start() {
-        engine.start(bpm: bpm, beatsPerMeasure: timeSignature.beatsPerMeasure)
+        guard engine.start(bpm: bpm, beatsPerMeasure: timeSignature.beatsPerMeasure) else { return }
         isPlaying = true
         currentBeat = 0
     }

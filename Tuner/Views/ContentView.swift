@@ -20,8 +20,6 @@ struct ContentView: View {
                         }
                     }
                 }
-                .onAppear { tunerViewModel.start() }
-                .onDisappear { tunerViewModel.stop() }
             }
             .tabItem {
                 Label("Tuner", systemImage: "tuningfork")
@@ -45,6 +43,8 @@ struct ContentView: View {
                 Label("Metronome", systemImage: "metronome")
             }
         }
+        .onAppear { tunerViewModel.start() }
+        .onDisappear { tunerViewModel.stop() }
         .sheet(isPresented: $showSettings) {
             NavigationStack {
                 SettingsView(tunerViewModel: tunerViewModel, metronomeViewModel: metronomeViewModel)

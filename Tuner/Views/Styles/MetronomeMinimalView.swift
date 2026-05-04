@@ -57,7 +57,7 @@ struct MetronomeMinimalView: View {
             Button(action: { viewModel.toggle() }) {
                 Image(systemName: viewModel.isPlaying ? "stop.fill" : "play.fill")
                     .font(.title2)
-                    .foregroundStyle(viewModel.isPlaying ? .white : .white)
+                    .foregroundStyle(.white)
                     .frame(width: 52, height: 52)
                     .background(viewModel.isPlaying ? Color.red : Color.green, in: Circle())
             }

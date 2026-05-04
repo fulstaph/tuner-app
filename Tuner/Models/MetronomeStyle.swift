@@ -1,4 +1,4 @@
-enum MetronomeStyle: String, CaseIterable, Identifiable {
+enum MetronomeStyle: String, CaseIterable, Identifiable, Codable {
     case minimal
     case circularGauge
 

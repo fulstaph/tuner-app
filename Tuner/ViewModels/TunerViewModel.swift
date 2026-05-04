@@ -18,6 +18,7 @@ final class TunerViewModel {
 
     private let audioEngine: AudioEngineProtocol
     private let pitchDetector: PitchDetector
+    private var isRunning = false
 
     private var smoothedCents: Double = 0
     private let smoothingFactor: Double = 0.3
@@ -45,10 +46,14 @@ final class TunerViewModel {
     }
 
     func start() {
+        guard !isRunning else { return }
+        isRunning = true
         try? audioEngine.start()
     }
 
     func stop() {
+        guard isRunning else { return }
+        isRunning = false
         audioEngine.stop()
     }
 
