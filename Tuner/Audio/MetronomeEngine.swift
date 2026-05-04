@@ -25,6 +25,11 @@ final class MetronomeEngine {
     private(set) var isPlaying = false
     var onBeat: ((Int) -> Void)?
     var onStop: (() -> Void)?
+    var onResume: (() -> Void)?
+
+    private var interruptedWhilePlaying = false
+    private var interruptedBPM: Int = 120
+    private var interruptedBeatsPerMeasure: Int = 4
 
     init() {
         NotificationCenter.default.addObserver(
@@ -66,6 +71,7 @@ final class MetronomeEngine {
         audioEngine = nil
 
         isPlaying = false
+        interruptedWhilePlaying = false
     }
 
     func updateTempo(bpm: Int) {
@@ -165,10 +171,43 @@ final class MetronomeEngine {
     @objc private func handleInterruption(notification: Notification) {
         guard let userInfo = notification.userInfo,
               let typeRaw = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
-              let type = AVAudioSession.InterruptionType(rawValue: typeRaw),
-              type == .began else { return }
+              let type = AVAudioSession.InterruptionType(rawValue: typeRaw) else { return }
 
-        stop()
-        DispatchQueue.main.async { [weak self] in self?.onStop?() }
+        switch type {
+        case .began:
+            interruptedWhilePlaying = isPlaying
+            interruptedBPM = bpm
+            interruptedBeatsPerMeasure = beatsPerMeasure
+            // Stop audio without clearing the interrupted flag
+            scheduler?.cancel()
+            scheduler = nil
+            if let player = playerNode {
+                player.stop()
+                audioEngine?.detach(player)
+            }
+            playerNode = nil
+            audioEngine?.stop()
+            audioEngine = nil
+            isPlaying = false
+            DispatchQueue.main.async { [weak self] in self?.onStop?() }
+
+        case .ended:
+            let shouldResume = interruptedWhilePlaying
+            interruptedWhilePlaying = false
+
+            guard shouldResume else { return }
+
+            let optionsRaw = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
+            let options = AVAudioSession.InterruptionOptions(rawValue: optionsRaw)
+            guard options.contains(.shouldResume) else { return }
+
+            let resumeBPM = interruptedBPM
+            let resumeBeats = interruptedBeatsPerMeasure
+            start(bpm: resumeBPM, beatsPerMeasure: resumeBeats)
+            DispatchQueue.main.async { [weak self] in self?.onResume?() }
+
+        @unknown default:
+            break
+        }
     }
 }
