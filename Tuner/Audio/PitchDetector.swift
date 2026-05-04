@@ -49,15 +49,13 @@ struct PitchDetector {
         }
 
         var bestTau = -1
-        for tau in minLag...maxLag {
-            if cmndf[tau] < confidenceThreshold {
-                var localTau = tau
-                while localTau + 1 <= maxLag, cmndf[localTau + 1] < cmndf[localTau] {
-                    localTau += 1
-                }
-                bestTau = localTau
-                break
+        for tau in minLag...maxLag where cmndf[tau] < confidenceThreshold {
+            var localTau = tau
+            while localTau + 1 <= maxLag, cmndf[localTau + 1] < cmndf[localTau] {
+                localTau += 1
             }
+            bestTau = localTau
+            break
         }
 
         guard bestTau > 0 else { return nil }

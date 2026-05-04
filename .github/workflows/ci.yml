@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    name: Lint & Test
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.3.app
+
+      - name: Install tools
+        run: brew install xcodegen swiftlint
+
+      - name: Generate Xcode project
+        run: xcodegen
+
+      - name: Lint
+        run: swiftlint lint --strict
+
+      - name: Run unit tests
+        run: |
+          xcodebuild test \
+            -project Tuner.xcodeproj \
+            -scheme Tuner \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -only-testing:TunerTests \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcpretty || exit 1
+
+      - name: Run UI tests
+        run: |
+          xcodebuild test \
+            -project Tuner.xcodeproj \
+            -scheme Tuner \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -only-testing:TunerUITests \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcpretty || exit 1
