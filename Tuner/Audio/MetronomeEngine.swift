@@ -12,8 +12,7 @@ final class MetronomeEngine {
         qos: .userInteractive
     )
 
-    private var ownedEngine: AVAudioEngine?
-    private weak var borrowedEngine: AVAudioEngine?
+    private var audioEngine: AVAudioEngine?
 
     private var accentBuffer: AVAudioPCMBuffer?
     private var normalBuffer: AVAudioPCMBuffer?
@@ -37,14 +36,10 @@ final class MetronomeEngine {
     }
 
     @discardableResult
-    func start(
-        bpm: Int,
-        beatsPerMeasure: Int,
-        externalEngine: AVAudioEngine? = nil
-    ) -> Bool {
+    func start(bpm: Int, beatsPerMeasure: Int) -> Bool {
         stop()
 
-        let audioReady = setupAudio(externalEngine: externalEngine)
+        let audioReady = setupAudio()
         self.bpm = bpm
         self.beatsPerMeasure = beatsPerMeasure
         currentBeat = 0
@@ -63,13 +58,12 @@ final class MetronomeEngine {
 
         if let player = playerNode {
             player.stop()
-            (ownedEngine ?? borrowedEngine)?.detach(player)
+            audioEngine?.detach(player)
         }
         playerNode = nil
 
-        ownedEngine?.stop()
-        ownedEngine = nil
-        borrowedEngine = nil
+        audioEngine?.stop()
+        audioEngine = nil
 
         isPlaying = false
     }
@@ -88,24 +82,16 @@ final class MetronomeEngine {
 
     // MARK: - Private
 
-    private func setupAudio(externalEngine: AVAudioEngine?) -> Bool {
+    private func setupAudio() -> Bool {
         let session = AVAudioSession.sharedInstance()
 
-        let engine: AVAudioEngine
-        if let ext = externalEngine, ext.isRunning {
-            engine = ext
-            borrowedEngine = ext
-            ownedEngine = nil
-        } else {
-            if session.category != .playAndRecord {
-                try? session.setCategory(.playback, mode: .default)
-                try? session.setActive(true)
-            }
-            let newEngine = AVAudioEngine()
-            ownedEngine = newEngine
-            borrowedEngine = nil
-            engine = newEngine
+        if session.category != .playAndRecord {
+            try? session.setCategory(.playback, mode: .default, options: [.duckOthers])
+            try? session.setActive(true)
         }
+
+        let engine = AVAudioEngine()
+        self.audioEngine = engine
 
         let bufferRate = session.sampleRate > 0 ? session.sampleRate : 44100
         let accent = ToneGenerator.makeClickBuffer(
@@ -118,30 +104,19 @@ final class MetronomeEngine {
         normalBuffer = normal
 
         let player = AVAudioPlayerNode()
-        var audioReady = false
+        engine.attach(player)
+        engine.connect(player, to: engine.mainMixerNode, format: accent.format)
 
-        if let ext = externalEngine, ext.isRunning {
-            engine.attach(player)
-            engine.connect(player, to: engine.mainMixerNode, format: accent.format)
+        do {
+            try engine.start()
             player.play()
-            audioReady = true
-        } else if let owned = ownedEngine {
-            owned.attach(player)
-            owned.connect(player, to: owned.mainMixerNode, format: accent.format)
-            do {
-                try owned.start()
-                player.play()
-                audioReady = true
-            } catch {
-                metLog.error("start: owned engine failed: \(error, privacy: .public)")
-                ownedEngine = nil
-            }
-        }
-
-        if audioReady {
             playerNode = player
+            return true
+        } catch {
+            metLog.error("start: engine failed: \(error, privacy: .public)")
+            audioEngine = nil
+            return false
         }
-        return audioReady
     }
 
     private func startScheduler() {
@@ -162,7 +137,7 @@ final class MetronomeEngine {
         lastBeatTime = now
 
         if let player = playerNode,
-           let engine = ownedEngine ?? borrowedEngine, engine.isRunning,
+           let engine = audioEngine, engine.isRunning,
            let accentBuf = accentBuffer, let normalBuf = normalBuffer {
             let buffer = currentBeat == 0 ? accentBuf : normalBuf
             player.scheduleBuffer(buffer, at: nil, options: [])

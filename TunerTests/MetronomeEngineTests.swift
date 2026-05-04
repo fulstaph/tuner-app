@@ -87,4 +87,10 @@ final class MetronomeEngineTests: XCTestCase {
         let expectedPattern = [0, 1, 2, 0, 1, 2, 0, 1]
         XCTAssertEqual(Array(beats.prefix(8)), expectedPattern)
     }
+
+    func testStartWithoutExternalEngineSucceeds() {
+        let result = engine.start(bpm: 120, beatsPerMeasure: 4)
+        XCTAssertTrue(result)
+        XCTAssertTrue(engine.isPlaying)
+    }
 }

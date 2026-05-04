@@ -45,7 +45,6 @@ struct ContentView: View {
         }
         .onAppear {
             tunerViewModel.start()
-            metronomeViewModel.externalAudioEngine = tunerViewModel.avAudioEngine
         }
         .onDisappear { tunerViewModel.stop() }
         .sheet(isPresented: $showSettings) {
