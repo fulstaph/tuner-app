@@ -19,7 +19,7 @@ final class AudioEngine: AudioEngineProtocol {
 
     func start() throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.record, mode: .measurement)
+        try session.setCategory(.playAndRecord, mode: .measurement, options: [.defaultToSpeaker])
         try session.setActive(true)
 
         let inputNode = engine.inputNode
