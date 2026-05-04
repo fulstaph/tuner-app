@@ -9,10 +9,9 @@ final class MetronomeEngine {
 
     private var accentBuffer: AVAudioPCMBuffer?
     private var normalBuffer: AVAudioPCMBuffer?
-    private var sampleRate: Double = 44100
 
     // All fields below are only accessed on schedulerQueue after start()
-    private var samplesPerBeat: Double = 0
+    private var bpm: Int = 120
     private var nextBeatSampleTime: AVAudioFramePosition = -1
     private var currentBeat: Int = 0
     private var beatsPerMeasure: Int = 4
@@ -24,16 +23,22 @@ final class MetronomeEngine {
     func start(bpm: Int, beatsPerMeasure: Int) -> Bool {
         stop()
 
-        let sessionRate = AVAudioSession.sharedInstance().sampleRate
-        sampleRate = sessionRate > 0 ? sessionRate : 44100
+        // Ensure the session supports output, regardless of whether the tuner has started.
+        // .playAndRecord bypasses the ringer switch; .soloAmbient (the default) does not.
+        let session = AVAudioSession.sharedInstance()
+        if session.category != .playAndRecord {
+            try? session.setCategory(.playback, mode: .default)
+            try? session.setActive(true)
+        }
 
-        let accent = ToneGenerator.makeClickBuffer(frequency: 880, duration: 0.03, sampleRate: sampleRate)
-        let normal = ToneGenerator.makeClickBuffer(frequency: 660, duration: 0.03, sampleRate: sampleRate)
+        let bufferRate = session.sampleRate > 0 ? session.sampleRate : 44100
+        let accent = ToneGenerator.makeClickBuffer(frequency: 880, duration: 0.03, sampleRate: bufferRate)
+        let normal = ToneGenerator.makeClickBuffer(frequency: 660, duration: 0.03, sampleRate: bufferRate)
         accentBuffer = accent
         normalBuffer = normal
 
+        self.bpm = bpm
         self.beatsPerMeasure = beatsPerMeasure
-        samplesPerBeat = sampleRate * 60.0 / Double(bpm)
         currentBeat = 0
         nextBeatSampleTime = -1
 
@@ -69,8 +74,7 @@ final class MetronomeEngine {
 
     func updateTempo(bpm: Int) {
         schedulerQueue.async { [weak self] in
-            guard let self else { return }
-            samplesPerBeat = sampleRate * 60.0 / Double(bpm)
+            self?.bpm = bpm
         }
     }
 
@@ -95,26 +99,37 @@ final class MetronomeEngine {
         guard let nodeTime = player.lastRenderTime, nodeTime.isSampleTimeValid else { return }
         guard let accentBuf = accentBuffer, let normalBuf = normalBuffer else { return }
 
+        // Use the hardware sample rate from the render clock, not the buffer rate.
+        // On iPhones this is often 48000 Hz; on the simulator it matches the buffer rate.
+        let rate = nodeTime.sampleRate
+
         if nextBeatSampleTime < 0 {
             nextBeatSampleTime = nodeTime.sampleTime
         }
 
-        let lookAheadSamples = AVAudioFramePosition(sampleRate * 0.1) // 100ms
+        let lookAheadSamples = AVAudioFramePosition(rate * 0.1) // 100ms
         let deadline = nodeTime.sampleTime + lookAheadSamples
+        let samplesPerBeat = AVAudioFramePosition(rate * 60.0 / Double(bpm))
 
         while nextBeatSampleTime < deadline {
             let buffer = currentBeat == 0 ? accentBuf : normalBuf
-            let beatTime = AVAudioTime(sampleTime: nextBeatSampleTime, atRate: sampleRate)
+
+            // extrapolateTime produces an AVAudioTime with a valid host time, which the
+            // player node can compare against its render clock without any rate ambiguity.
+            // Fall back to a sample-time-only AVAudioTime if host time isn't available.
+            let beatSampleTime = AVAudioTime(sampleTime: nextBeatSampleTime, atRate: rate)
+            let beatTime = beatSampleTime.extrapolateTime(fromAnchor: nodeTime)
+                ?? beatSampleTime
             player.scheduleBuffer(buffer, at: beatTime, options: [])
 
             let beat = currentBeat
-            let delaySeconds = Double(nextBeatSampleTime - nodeTime.sampleTime) / sampleRate
+            let delaySeconds = Double(nextBeatSampleTime - nodeTime.sampleTime) / rate
             DispatchQueue.main.asyncAfter(deadline: .now() + max(0, delaySeconds)) { [weak self] in
                 self?.onBeat?(beat)
             }
 
             currentBeat = (currentBeat + 1) % beatsPerMeasure
-            nextBeatSampleTime += AVAudioFramePosition(samplesPerBeat)
+            nextBeatSampleTime += samplesPerBeat
         }
     }
 }
