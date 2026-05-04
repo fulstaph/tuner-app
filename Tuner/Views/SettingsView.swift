@@ -1,12 +1,13 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Bindable var viewModel: TunerViewModel
+    @Bindable var tunerViewModel: TunerViewModel
+    @Bindable var metronomeViewModel: MetronomeViewModel
 
     var body: some View {
         Form {
-            Section("Display") {
-                Picker("Tuner Style", selection: $viewModel.tunerStyle) {
+            Section("Tuner Display") {
+                Picker("Tuner Style", selection: $tunerViewModel.tunerStyle) {
                     ForEach(TunerStyle.allCases) { style in
                         Text(style.displayName).tag(style)
                     }
@@ -14,7 +15,7 @@ struct SettingsView: View {
             }
 
             Section("Instrument") {
-                Picker("Transposition", selection: $viewModel.instrumentPreset) {
+                Picker("Transposition", selection: $tunerViewModel.instrumentPreset) {
                     ForEach(InstrumentPreset.allCases) { preset in
                         Text(preset.displayName).tag(preset)
                     }
@@ -23,22 +24,33 @@ struct SettingsView: View {
 
             Section("Reference Pitch") {
                 VStack(alignment: .leading) {
-                    Text("A4 = \(Int(viewModel.referencePitch)) Hz")
+                    Text("A4 = \(Int(tunerViewModel.referencePitch)) Hz")
                         .font(.headline)
-                    Slider(value: $viewModel.referencePitch, in: 415...460, step: 1)
+                    Slider(value: $tunerViewModel.referencePitch, in: 415...460, step: 1)
                     HStack {
                         Text("415")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         Spacer()
                         Button("Reset to 440") {
-                            viewModel.referencePitch = 440
+                            tunerViewModel.referencePitch = 440
                         }
                         .font(.caption)
                         Spacer()
                         Text("460")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                    }
+                }
+            }
+
+            Section("Metronome Display") {
+                Picker("Metronome Style", selection: Binding(
+                    get: { metronomeViewModel.style },
+                    set: { metronomeViewModel.setStyle($0) }
+                )) {
+                    ForEach(MetronomeStyle.allCases) { style in
+                        Text(style.displayName).tag(style)
                     }
                 }
             }
