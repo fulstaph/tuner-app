@@ -5,6 +5,7 @@ struct MetronomeCircularView: View {
     @Bindable var viewModel: MetronomeViewModel
     @State private var isEditingBPM = false
     @State private var bpmText = ""
+    @State private var showInvalidBPM = false
     @FocusState private var isBPMFieldFocused: Bool
 
     private var bpmProgress: Double {
@@ -38,11 +39,12 @@ struct MetronomeCircularView: View {
 
             VStack(spacing: 2) {
                 bpmDisplay
-                Text("BPM")
+                Text(showInvalidBPM ? "40 – 240" : "BPM")
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(showInvalidBPM ? .red : .secondary)
                     .textCase(.uppercase)
                     .kerning(2)
+                    .animation(.easeOut(duration: 0.2), value: showInvalidBPM)
             }
         }
         .frame(width: 180, height: 180)
@@ -51,34 +53,73 @@ struct MetronomeCircularView: View {
     @ViewBuilder
     private var bpmDisplay: some View {
         if isEditingBPM {
-            TextField("BPM", text: $bpmText)
-                .font(.system(size: 48, weight: .bold, design: .rounded))
-                .multilineTextAlignment(.center)
-                .keyboardType(.numberPad)
-                .focused($isBPMFieldFocused)
-                .frame(width: 120)
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        Spacer()
-                        Button("Done") { commitBPM() }
+            VStack(spacing: 6) {
+                TextField("BPM", text: $bpmText)
+                    .font(.system(size: 48, weight: .bold, design: .rounded))
+                    .multilineTextAlignment(.center)
+                    .keyboardType(.numberPad)
+                    .focused($isBPMFieldFocused)
+                    .frame(width: 120)
+                    .foregroundColor(bpmTextIsValid ? .primary : .red)
+                    .onChange(of: bpmText) { sanitizeBPMText() }
+
+                HStack(spacing: 20) {
+                    Button { cancelBPM() } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(.secondary)
+                    }
+                    Button { commitBPM() } label: {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(.green)
                     }
                 }
+            }
         } else {
             Text("\(viewModel.bpm)")
                 .font(.system(size: 48, weight: .bold, design: .rounded))
                 .contentTransition(.numericText())
                 .onTapGesture {
                     bpmText = "\(viewModel.bpm)"
+                    showInvalidBPM = false
                     isEditingBPM = true
                     isBPMFieldFocused = true
                 }
         }
     }
 
+    private var bpmTextIsValid: Bool {
+        guard let value = Int(bpmText) else { return bpmText.isEmpty }
+        return (40...240).contains(value)
+    }
+
+    private func sanitizeBPMText() {
+        let stripped = String(bpmText.drop(while: { $0 == "0" }))
+        if stripped != bpmText {
+            bpmText = stripped.isEmpty && !bpmText.isEmpty ? "" : stripped
+        }
+        if bpmText.count > 3 {
+            bpmText = String(bpmText.prefix(3))
+        }
+        showInvalidBPM = false
+    }
+
     private func commitBPM() {
-        if let value = Int(bpmText) { viewModel.setBPM(value) }
+        if let value = Int(bpmText), (40...240).contains(value) {
+            viewModel.setBPM(value)
+            isBPMFieldFocused = false
+            isEditingBPM = false
+            showInvalidBPM = false
+        } else {
+            showInvalidBPM = true
+        }
+    }
+
+    private func cancelBPM() {
         isBPMFieldFocused = false
         isEditingBPM = false
+        showInvalidBPM = false
     }
 
     private var beatSquares: some View {
