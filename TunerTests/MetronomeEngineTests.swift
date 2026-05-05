@@ -94,12 +94,8 @@ final class MetronomeEngineTests: XCTestCase {
         XCTAssertTrue(engine.isPlaying)
     }
 
-    func testOnResumeCallbackExists() {
-        let expectation = XCTestExpectation(description: "onResume can be set")
-        engine.onResume = {
-            expectation.fulfill()
-        }
-        // Verify the callback is settable (actual resume requires a real interruption)
+    func testOnResumeCallbackIsSettable() {
+        engine.onResume = {}
         XCTAssertNotNil(engine.onResume)
     }
 }

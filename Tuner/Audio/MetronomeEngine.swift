@@ -28,8 +28,6 @@ final class MetronomeEngine {
     var onResume: (() -> Void)?
 
     private var interruptedWhilePlaying = false
-    private var interruptedBPM: Int = 120
-    private var interruptedBeatsPerMeasure: Int = 4
 
     init() {
         NotificationCenter.default.addObserver(
@@ -178,41 +176,41 @@ final class MetronomeEngine {
               let typeRaw = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
               let type = AVAudioSession.InterruptionType(rawValue: typeRaw) else { return }
 
-        switch type {
-        case .began:
-            interruptedWhilePlaying = isPlaying
-            interruptedBPM = bpm
-            interruptedBeatsPerMeasure = beatsPerMeasure
-            // Stop audio without clearing the interrupted flag
-            scheduler?.cancel()
-            scheduler = nil
-            if let player = playerNode {
-                player.stop()
-                audioEngine?.detach(player)
+        let optionsRaw = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
+
+        schedulerQueue.async { [weak self] in
+            guard let self else { return }
+            switch type {
+            case .began:
+                self.interruptedWhilePlaying = self.isPlaying
+                // Stop audio without clearing the interrupted flag
+                self.scheduler?.cancel()
+                self.scheduler = nil
+                if let player = self.playerNode {
+                    player.stop()
+                    self.audioEngine?.detach(player)
+                }
+                self.playerNode = nil
+                self.audioEngine?.stop()
+                self.audioEngine = nil
+                self.isPlaying = false
+                DispatchQueue.main.async { [weak self] in self?.onStop?() }
+
+            case .ended:
+                let shouldResume = self.interruptedWhilePlaying
+                self.interruptedWhilePlaying = false
+
+                guard shouldResume else { return }
+
+                let options = AVAudioSession.InterruptionOptions(rawValue: optionsRaw)
+                guard options.contains(.shouldResume) else { return }
+
+                self.start(bpm: self.bpm, beatsPerMeasure: self.beatsPerMeasure)
+                DispatchQueue.main.async { [weak self] in self?.onResume?() }
+
+            @unknown default:
+                break
             }
-            playerNode = nil
-            audioEngine?.stop()
-            audioEngine = nil
-            isPlaying = false
-            DispatchQueue.main.async { [weak self] in self?.onStop?() }
-
-        case .ended:
-            let shouldResume = interruptedWhilePlaying
-            interruptedWhilePlaying = false
-
-            guard shouldResume else { return }
-
-            let optionsRaw = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
-            let options = AVAudioSession.InterruptionOptions(rawValue: optionsRaw)
-            guard options.contains(.shouldResume) else { return }
-
-            let resumeBPM = interruptedBPM
-            let resumeBeats = interruptedBeatsPerMeasure
-            start(bpm: resumeBPM, beatsPerMeasure: resumeBeats)
-            DispatchQueue.main.async { [weak self] in self?.onResume?() }
-
-        @unknown default:
-            break
         }
     }
 }

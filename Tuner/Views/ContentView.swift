@@ -44,9 +44,6 @@ struct ContentView: View {
                 Label("Metronome", systemImage: "metronome")
             }
         }
-        .onAppear {
-            tunerViewModel.start()
-        }
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
             case .background:
