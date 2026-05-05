@@ -47,7 +47,7 @@ struct ContentView: View {
         .onAppear {
             tunerViewModel.start()
         }
-        .onChange(of: scenePhase) { oldPhase, newPhase in
+        .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
             case .background:
                 tunerViewModel.stop()
