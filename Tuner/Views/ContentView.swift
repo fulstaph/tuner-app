@@ -4,6 +4,7 @@ struct ContentView: View {
     @State private var tunerViewModel = TunerViewModel()
     @State private var metronomeViewModel = MetronomeViewModel()
     @State private var showSettings = false
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         TabView {
@@ -46,7 +47,16 @@ struct ContentView: View {
         .onAppear {
             tunerViewModel.start()
         }
-        .onDisappear { tunerViewModel.stop() }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            switch newPhase {
+            case .background:
+                tunerViewModel.stop()
+            case .active:
+                tunerViewModel.start()
+            default:
+                break
+            }
+        }
         .sheet(isPresented: $showSettings) {
             NavigationStack {
                 SettingsView(tunerViewModel: tunerViewModel, metronomeViewModel: metronomeViewModel)
