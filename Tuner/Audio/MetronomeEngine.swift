@@ -72,6 +72,11 @@ final class MetronomeEngine {
 
         isPlaying = false
         interruptedWhilePlaying = false
+
+        let session = AVAudioSession.sharedInstance()
+        if session.category != .playAndRecord {
+            try? session.setActive(false, options: .notifyOthersOnDeactivation)
+        }
     }
 
     func updateTempo(bpm: Int) {
