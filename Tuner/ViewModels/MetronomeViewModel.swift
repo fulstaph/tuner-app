@@ -29,6 +29,10 @@ final class MetronomeViewModel {
             self?.isPlaying = false
             self?.currentBeat = 0
         }
+        engine.onResume = { [weak self] in
+            self?.isPlaying = true
+            self?.currentBeat = 0
+        }
     }
 
     func toggle() {

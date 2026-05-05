@@ -100,4 +100,13 @@ final class MetronomeViewModelTests: XCTestCase {
         // Only one tap in history now, BPM shouldn't change from single tap
         XCTAssertEqual(viewModel.bpm, 120) // stays at default
     }
+
+    @MainActor
+    func testStopSetsNotPlaying() {
+        viewModel.toggle() // start
+        XCTAssertTrue(viewModel.isPlaying)
+        viewModel.stop()
+        XCTAssertFalse(viewModel.isPlaying)
+        XCTAssertEqual(viewModel.currentBeat, 0)
+    }
 }
