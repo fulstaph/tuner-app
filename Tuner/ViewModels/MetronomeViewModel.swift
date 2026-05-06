@@ -1,5 +1,4 @@
 // Tuner/ViewModels/MetronomeViewModel.swift
-import AVFoundation
 import SwiftUI
 
 @Observable
@@ -12,8 +11,6 @@ final class MetronomeViewModel {
 
     private let engine = MetronomeEngine()
     private var tapTimestamps: [Date] = []
-
-    var externalAudioEngine: AVAudioEngine?
 
     init() {
         let storedBPM = UserDefaults.standard.integer(forKey: "metronomeBPM")
@@ -32,6 +29,10 @@ final class MetronomeViewModel {
             self?.isPlaying = false
             self?.currentBeat = 0
         }
+        engine.onResume = { [weak self] in
+            self?.isPlaying = true
+            self?.currentBeat = 0
+        }
     }
 
     func toggle() {
@@ -45,8 +46,7 @@ final class MetronomeViewModel {
     func start() {
         let started = engine.start(
             bpm: bpm,
-            beatsPerMeasure: timeSignature.beatsPerMeasure,
-            externalEngine: externalAudioEngine
+            beatsPerMeasure: timeSignature.beatsPerMeasure
         )
         guard started else { return }
         isPlaying = true

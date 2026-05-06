@@ -4,6 +4,7 @@ struct ContentView: View {
     @State private var tunerViewModel = TunerViewModel()
     @State private var metronomeViewModel = MetronomeViewModel()
     @State private var showSettings = false
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         TabView {
@@ -43,11 +44,16 @@ struct ContentView: View {
                 Label("Metronome", systemImage: "metronome")
             }
         }
-        .onAppear {
-            tunerViewModel.start()
-            metronomeViewModel.externalAudioEngine = tunerViewModel.avAudioEngine
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .background:
+                tunerViewModel.stop()
+            case .active:
+                tunerViewModel.start()
+            default:
+                break
+            }
         }
-        .onDisappear { tunerViewModel.stop() }
         .sheet(isPresented: $showSettings) {
             NavigationStack {
                 SettingsView(tunerViewModel: tunerViewModel, metronomeViewModel: metronomeViewModel)
