@@ -39,7 +39,7 @@ struct MetronomeCircularView: View {
     }
 
     private var beatSquares: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             ForEach(0..<viewModel.timeSignature.beatsPerMeasure, id: \.self) { beat in
                 RoundedRectangle(cornerRadius: 6)
                     .fill(beatColor(beat))
@@ -50,6 +50,16 @@ struct MetronomeCircularView: View {
                             .foregroundStyle(beatTextColor(beat))
                     }
                     .animation(.easeOut(duration: 0.15), value: viewModel.currentBeat)
+
+                if viewModel.subdivision != .none
+                    && beat < viewModel.timeSignature.beatsPerMeasure - 1 {
+                    ForEach(1..<viewModel.subdivision.subdivisionsPerBeat, id: \.self) { sub in
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(subBeatColor(beat: beat, subBeat: sub))
+                            .frame(width: 8, height: 8)
+                            .animation(.easeOut(duration: 0.1), value: viewModel.currentSubBeat)
+                    }
+                }
             }
         }
     }
@@ -64,6 +74,15 @@ struct MetronomeCircularView: View {
             ? .white : .primary
     }
 
+    private func subBeatColor(beat: Int, subBeat: Int) -> Color {
+        guard viewModel.isPlaying,
+              beat == viewModel.currentBeat,
+              subBeat == viewModel.currentSubBeat else {
+            return Color(.systemGray5)
+        }
+        return Color.green.opacity(0.5)
+    }
+
     private var controlRow: some View {
         HStack(spacing: 12) {
             Menu {
@@ -72,6 +91,18 @@ struct MetronomeCircularView: View {
                 }
             } label: {
                 Text(viewModel.timeSignature.displayName)
+                    .font(.subheadline.weight(.medium))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(Color(.systemGray5), in: RoundedRectangle(cornerRadius: 8))
+            }
+
+            Menu {
+                ForEach(BeatSubdivision.allCases) { sub in
+                    Button(sub.displayName) { viewModel.setSubdivision(sub) }
+                }
+            } label: {
+                Image(systemName: subdivisionIcon)
                     .font(.subheadline.weight(.medium))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 8)
@@ -118,5 +149,14 @@ struct MetronomeCircularView: View {
             get: { viewModel.bpm },
             set: { viewModel.setBPM($0) }
         )
+    }
+
+    private var subdivisionIcon: String {
+        switch viewModel.subdivision {
+        case .none: "1.circle"
+        case .eighths: "2.circle"
+        case .triplets: "3.circle"
+        case .sixteenths: "4.circle"
+        }
     }
 }

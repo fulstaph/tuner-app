@@ -6,8 +6,10 @@ final class MetronomeViewModel {
     var bpm: Int = 120
     var timeSignature: TimeSignature = .fourFour
     var style: MetronomeStyle = .minimal
+    var subdivision: BeatSubdivision = .none
     var isPlaying: Bool = false
     var currentBeat: Int = 0
+    var currentSubBeat: Int = 0
 
     private let engine = MetronomeEngine()
     private var tapTimestamps: [Date] = []
@@ -22,8 +24,14 @@ final class MetronomeViewModel {
         let storedStyle = UserDefaults.standard.string(forKey: "metronomeStyle")
         if let s = storedStyle.flatMap(MetronomeStyle.init(rawValue:)) { self.style = s }
 
+        let storedSub = UserDefaults.standard.string(forKey: "metronomeSubdivision")
+        if let sub = storedSub.flatMap(BeatSubdivision.init(rawValue:)) { self.subdivision = sub }
+
         engine.onBeat = { [weak self] beat in
             self?.currentBeat = beat
+        }
+        engine.onSubBeat = { [weak self] _, subBeat in
+            self?.currentSubBeat = subBeat
         }
         engine.onStop = { [weak self] in
             self?.isPlaying = false
@@ -46,7 +54,8 @@ final class MetronomeViewModel {
     func start() {
         let started = engine.start(
             bpm: bpm,
-            beatsPerMeasure: timeSignature.beatsPerMeasure
+            beatsPerMeasure: timeSignature.beatsPerMeasure,
+            subdivisionsPerBeat: subdivision.subdivisionsPerBeat
         )
         guard started else { return }
         isPlaying = true
@@ -57,6 +66,7 @@ final class MetronomeViewModel {
         engine.stop()
         isPlaying = false
         currentBeat = 0
+        currentSubBeat = 0
     }
 
     func setBPM(_ newBPM: Int) {
@@ -74,6 +84,12 @@ final class MetronomeViewModel {
     func setStyle(_ newStyle: MetronomeStyle) {
         style = newStyle
         UserDefaults.standard.set(newStyle.rawValue, forKey: "metronomeStyle")
+    }
+
+    func setSubdivision(_ sub: BeatSubdivision) {
+        subdivision = sub
+        UserDefaults.standard.set(sub.rawValue, forKey: "metronomeSubdivision")
+        if isPlaying { engine.updateSubdivision(sub.subdivisionsPerBeat) }
     }
 
     func tapTempo(at date: Date = Date()) {

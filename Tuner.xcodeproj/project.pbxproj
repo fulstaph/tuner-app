@@ -26,6 +26,7 @@
 		7CCA807CCA699EDC4446476F /* MetronomeMinimalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFE9E87ED67580EA5C2B604 /* MetronomeMinimalView.swift */; };
 		805350DF97F355A9677AEEE0 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06926F8F07FB1EC71C2268FF /* SettingsView.swift */; };
 		822365E42B9BCF014385C89B /* InstrumentPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F7EE329D1EB5B8EA651261 /* InstrumentPreset.swift */; };
+		8D4F17366B28939A0A1DA38C /* BeatSubdivision.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8317662B0B379781AA0FCEE /* BeatSubdivision.swift */; };
 		A515832E59DCAAECF3CC3390 /* MetronomeStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C7F2797EA858F4DF52FC84 /* MetronomeStyle.swift */; };
 		AC42EF4380495CB710DEA135 /* TunerData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E8136491ED340A92ABAC8E /* TunerData.swift */; };
 		B0FE1653079F88C37FC7DD58 /* MinimalistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63873201B76E00CCDA348DC /* MinimalistView.swift */; };
@@ -83,6 +84,7 @@
 		97EC35051D44F87E0B052EB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9A03A39B33D980FD50D084CD /* TimeSignature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSignature.swift; sourceTree = "<group>"; };
 		A5B5B8BD960A4D8010564F09 /* MetronomeEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeEngineTests.swift; sourceTree = "<group>"; };
+		A8317662B0B379781AA0FCEE /* BeatSubdivision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatSubdivision.swift; sourceTree = "<group>"; };
 		ADF51900E7EC8F5449EBD4E8 /* NoteMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMapperTests.swift; sourceTree = "<group>"; };
 		B4C7F2797EA858F4DF52FC84 /* MetronomeStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeStyle.swift; sourceTree = "<group>"; };
 		BD08A8F1F2C9FDD4E6002DEC /* TunerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerViewModel.swift; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 		704C66F4B3389B58175E299E /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				A8317662B0B379781AA0FCEE /* BeatSubdivision.swift */,
 				E4F7EE329D1EB5B8EA651261 /* InstrumentPreset.swift */,
 				B4C7F2797EA858F4DF52FC84 /* MetronomeStyle.swift */,
 				9A03A39B33D980FD50D084CD /* TimeSignature.swift */,
@@ -376,6 +379,7 @@
 			files = (
 				6E6BB9749F8B34C3FFC8CAA1 /* AudioEngine.swift in Sources */,
 				CD97401DD8615CE8C1DF834B /* BPMEditField.swift in Sources */,
+				8D4F17366B28939A0A1DA38C /* BeatSubdivision.swift in Sources */,
 				64AD72BD404D8DF110723992 /* ContentView.swift in Sources */,
 				822365E42B9BCF014385C89B /* InstrumentPreset.swift in Sources */,
 				3BC895AC96AF63D9014BF427 /* LinearBarView.swift in Sources */,
