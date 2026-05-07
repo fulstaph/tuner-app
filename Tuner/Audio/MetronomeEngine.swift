@@ -12,8 +12,7 @@ final class MetronomeEngine {
         qos: .userInteractive
     )
 
-    private var ownedEngine: AVAudioEngine?
-    private weak var borrowedEngine: AVAudioEngine?
+    private var audioEngine: AVAudioEngine?
 
     private var accentBuffer: AVAudioPCMBuffer?
     private var normalBuffer: AVAudioPCMBuffer?
@@ -26,6 +25,9 @@ final class MetronomeEngine {
     private(set) var isPlaying = false
     var onBeat: ((Int) -> Void)?
     var onStop: (() -> Void)?
+    var onResume: (() -> Void)?
+
+    private var interruptedWhilePlaying = false
 
     init() {
         NotificationCenter.default.addObserver(
@@ -37,14 +39,10 @@ final class MetronomeEngine {
     }
 
     @discardableResult
-    func start(
-        bpm: Int,
-        beatsPerMeasure: Int,
-        externalEngine: AVAudioEngine? = nil
-    ) -> Bool {
+    func start(bpm: Int, beatsPerMeasure: Int) -> Bool {
         stop()
 
-        let audioReady = setupAudio(externalEngine: externalEngine)
+        let audioReady = setupAudio()
         self.bpm = bpm
         self.beatsPerMeasure = beatsPerMeasure
         currentBeat = 0
@@ -63,15 +61,20 @@ final class MetronomeEngine {
 
         if let player = playerNode {
             player.stop()
-            (ownedEngine ?? borrowedEngine)?.detach(player)
+            audioEngine?.detach(player)
         }
         playerNode = nil
 
-        ownedEngine?.stop()
-        ownedEngine = nil
-        borrowedEngine = nil
+        audioEngine?.stop()
+        audioEngine = nil
 
         isPlaying = false
+        interruptedWhilePlaying = false
+
+        let session = AVAudioSession.sharedInstance()
+        if session.category != .playAndRecord {
+            try? session.setActive(false, options: .notifyOthersOnDeactivation)
+        }
     }
 
     func updateTempo(bpm: Int) {
@@ -88,24 +91,16 @@ final class MetronomeEngine {
 
     // MARK: - Private
 
-    private func setupAudio(externalEngine: AVAudioEngine?) -> Bool {
+    private func setupAudio() -> Bool {
         let session = AVAudioSession.sharedInstance()
 
-        let engine: AVAudioEngine
-        if let ext = externalEngine, ext.isRunning {
-            engine = ext
-            borrowedEngine = ext
-            ownedEngine = nil
-        } else {
-            if session.category != .playAndRecord {
-                try? session.setCategory(.playback, mode: .default)
-                try? session.setActive(true)
-            }
-            let newEngine = AVAudioEngine()
-            ownedEngine = newEngine
-            borrowedEngine = nil
-            engine = newEngine
+        if session.category != .playAndRecord {
+            try? session.setCategory(.playback, mode: .default, options: [.duckOthers])
+            try? session.setActive(true)
         }
+
+        let engine = AVAudioEngine()
+        self.audioEngine = engine
 
         let bufferRate = session.sampleRate > 0 ? session.sampleRate : 44100
         let accent = ToneGenerator.makeClickBuffer(
@@ -118,30 +113,19 @@ final class MetronomeEngine {
         normalBuffer = normal
 
         let player = AVAudioPlayerNode()
-        var audioReady = false
+        engine.attach(player)
+        engine.connect(player, to: engine.mainMixerNode, format: accent.format)
 
-        if let ext = externalEngine, ext.isRunning {
-            engine.attach(player)
-            engine.connect(player, to: engine.mainMixerNode, format: accent.format)
+        do {
+            try engine.start()
             player.play()
-            audioReady = true
-        } else if let owned = ownedEngine {
-            owned.attach(player)
-            owned.connect(player, to: owned.mainMixerNode, format: accent.format)
-            do {
-                try owned.start()
-                player.play()
-                audioReady = true
-            } catch {
-                metLog.error("start: owned engine failed: \(error, privacy: .public)")
-                ownedEngine = nil
-            }
-        }
-
-        if audioReady {
             playerNode = player
+            return true
+        } catch {
+            metLog.error("start: engine failed: \(error, privacy: .public)")
+            audioEngine = nil
+            return false
         }
-        return audioReady
     }
 
     private func startScheduler() {
@@ -162,7 +146,7 @@ final class MetronomeEngine {
         lastBeatTime = now
 
         if let player = playerNode,
-           let engine = ownedEngine ?? borrowedEngine, engine.isRunning,
+           let engine = audioEngine, engine.isRunning,
            let accentBuf = accentBuffer, let normalBuf = normalBuffer {
             let buffer = currentBeat == 0 ? accentBuf : normalBuf
             player.scheduleBuffer(buffer, at: nil, options: [])
@@ -190,10 +174,43 @@ final class MetronomeEngine {
     @objc private func handleInterruption(notification: Notification) {
         guard let userInfo = notification.userInfo,
               let typeRaw = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
-              let type = AVAudioSession.InterruptionType(rawValue: typeRaw),
-              type == .began else { return }
+              let type = AVAudioSession.InterruptionType(rawValue: typeRaw) else { return }
 
-        stop()
-        DispatchQueue.main.async { [weak self] in self?.onStop?() }
+        let optionsRaw = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
+
+        schedulerQueue.async { [weak self] in
+            guard let self else { return }
+            switch type {
+            case .began:
+                self.interruptedWhilePlaying = self.isPlaying
+                // Stop audio without clearing the interrupted flag
+                self.scheduler?.cancel()
+                self.scheduler = nil
+                if let player = self.playerNode {
+                    player.stop()
+                    self.audioEngine?.detach(player)
+                }
+                self.playerNode = nil
+                self.audioEngine?.stop()
+                self.audioEngine = nil
+                self.isPlaying = false
+                DispatchQueue.main.async { [weak self] in self?.onStop?() }
+
+            case .ended:
+                let shouldResume = self.interruptedWhilePlaying
+                self.interruptedWhilePlaying = false
+
+                guard shouldResume else { return }
+
+                let options = AVAudioSession.InterruptionOptions(rawValue: optionsRaw)
+                guard options.contains(.shouldResume) else { return }
+
+                self.start(bpm: self.bpm, beatsPerMeasure: self.beatsPerMeasure)
+                DispatchQueue.main.async { [weak self] in self?.onResume?() }
+
+            @unknown default:
+                break
+            }
+        }
     }
 }
