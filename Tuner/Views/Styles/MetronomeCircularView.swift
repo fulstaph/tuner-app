@@ -55,7 +55,12 @@ struct MetronomeCircularView: View {
                     && beat < viewModel.timeSignature.beatsPerMeasure - 1 {
                     ForEach(1..<viewModel.subdivision.subdivisionsPerBeat, id: \.self) { sub in
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(subBeatColor(beat: beat, subBeat: sub))
+                            .fill(subBeatColor(
+                                beat: beat, subBeat: sub,
+                                currentBeat: viewModel.currentBeat,
+                                currentSubBeat: viewModel.currentSubBeat,
+                                isPlaying: viewModel.isPlaying
+                            ))
                             .frame(width: 8, height: 8)
                             .animation(.easeOut(duration: 0.1), value: viewModel.currentSubBeat)
                     }
@@ -72,15 +77,6 @@ struct MetronomeCircularView: View {
     private func beatTextColor(_ beat: Int) -> Color {
         beat == viewModel.currentBeat && viewModel.isPlaying
             ? .white : .primary
-    }
-
-    private func subBeatColor(beat: Int, subBeat: Int) -> Color {
-        guard viewModel.isPlaying,
-              beat == viewModel.currentBeat,
-              subBeat == viewModel.currentSubBeat else {
-            return Color(.systemGray5)
-        }
-        return Color.green.opacity(0.5)
     }
 
     private var controlRow: some View {
@@ -102,12 +98,13 @@ struct MetronomeCircularView: View {
                     Button(sub.displayName) { viewModel.setSubdivision(sub) }
                 }
             } label: {
-                Image(systemName: subdivisionIcon)
+                Image(systemName: viewModel.subdivision.sfSymbolName)
                     .font(.subheadline.weight(.medium))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 8)
                     .background(Color(.systemGray5), in: RoundedRectangle(cornerRadius: 8))
             }
+            .accessibilityLabel("Subdivision: \(viewModel.subdivision.displayName)")
 
             Button(action: { viewModel.setBPM(viewModel.bpm - 1) }) {
                 Image(systemName: "minus")
@@ -151,12 +148,4 @@ struct MetronomeCircularView: View {
         )
     }
 
-    private var subdivisionIcon: String {
-        switch viewModel.subdivision {
-        case .none: "1.circle"
-        case .eighths: "2.circle"
-        case .triplets: "3.circle"
-        case .sixteenths: "4.circle"
-        }
-    }
 }

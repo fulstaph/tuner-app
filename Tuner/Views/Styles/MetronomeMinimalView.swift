@@ -32,7 +32,12 @@ struct MetronomeMinimalView: View {
                     && beat < viewModel.timeSignature.beatsPerMeasure - 1 {
                     ForEach(1..<viewModel.subdivision.subdivisionsPerBeat, id: \.self) { sub in
                         Circle()
-                            .fill(subBeatColor(beat: beat, subBeat: sub))
+                            .fill(subBeatColor(
+                                beat: beat, subBeat: sub,
+                                currentBeat: viewModel.currentBeat,
+                                currentSubBeat: viewModel.currentSubBeat,
+                                isPlaying: viewModel.isPlaying
+                            ))
                             .frame(width: 6, height: 6)
                             .animation(.easeOut(duration: 0.1), value: viewModel.currentSubBeat)
                     }
@@ -44,15 +49,6 @@ struct MetronomeMinimalView: View {
     private func beatColor(_ beat: Int) -> Color {
         beat == viewModel.currentBeat && viewModel.isPlaying
             ? Color.green : Color(.systemGray4)
-    }
-
-    private func subBeatColor(beat: Int, subBeat: Int) -> Color {
-        guard viewModel.isPlaying,
-              beat == viewModel.currentBeat,
-              subBeat == viewModel.currentSubBeat else {
-            return Color(.systemGray5)
-        }
-        return Color.green.opacity(0.5)
     }
 
     private var controlRow: some View {
@@ -77,7 +73,7 @@ struct MetronomeMinimalView: View {
                     Button(sub.displayName) { viewModel.setSubdivision(sub) }
                 }
             } label: {
-                Image(systemName: subdivisionIcon)
+                Image(systemName: viewModel.subdivision.sfSymbolName)
                     .font(.subheadline.weight(.medium))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
@@ -86,6 +82,7 @@ struct MetronomeMinimalView: View {
                         in: RoundedRectangle(cornerRadius: 8)
                     )
             }
+            .accessibilityLabel("Subdivision: \(viewModel.subdivision.displayName)")
 
             Button(action: { viewModel.toggle() }) {
                 Image(systemName: viewModel.isPlaying ? "stop.fill" : "play.fill")
@@ -125,12 +122,4 @@ struct MetronomeMinimalView: View {
         )
     }
 
-    private var subdivisionIcon: String {
-        switch viewModel.subdivision {
-        case .none: "1.circle"
-        case .eighths: "2.circle"
-        case .triplets: "3.circle"
-        case .sixteenths: "4.circle"
-        }
-    }
 }

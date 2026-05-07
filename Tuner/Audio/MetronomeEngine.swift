@@ -25,7 +25,23 @@ final class MetronomeEngine {
     private var currentSubBeat: Int = 0
     private var lastBeatTime: CFAbsoluteTime = 0
 
-    private(set) var isPlaying = false
+    // isPlaying is read on schedulerQueue and written from any thread,
+    // so accesses are serialised with a lock to prevent a data race.
+    private let stateLock = NSLock()
+    private var _isPlaying = false
+    private(set) var isPlaying: Bool {
+        get {
+            stateLock.lock()
+            defer { stateLock.unlock() }
+            return _isPlaying
+        }
+        set {
+            stateLock.lock()
+            defer { stateLock.unlock() }
+            _isPlaying = newValue
+        }
+    }
+
     var onBeat: ((Int) -> Void)?
     var onSubBeat: ((Int, Int) -> Void)?
     var onStop: (() -> Void)?

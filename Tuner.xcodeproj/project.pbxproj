@@ -34,6 +34,7 @@
 		BECCDFFF41B62A0A0AFF6AA6 /* NeedleGaugeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BF44E271F581CA31AF1FE9B /* NeedleGaugeView.swift */; };
 		C543A43846DCA07EE5A08817 /* ToneGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B1135CD079DAF66A7F168B /* ToneGenerator.swift */; };
 		C55000D2E1C0F2DA9FE8C233 /* TimeSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A03A39B33D980FD50D084CD /* TimeSignature.swift */; };
+		CAE9F2AA66C5A1896AB96BF3 /* MetronomeSubBeatHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E99B2CF4B605D9637DD085B1 /* MetronomeSubBeatHelpers.swift */; };
 		CD97401DD8615CE8C1DF834B /* BPMEditField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 739FF99D9C111D2789ADDD2B /* BPMEditField.swift */; };
 		CF9FCFAA672BCA4C1EF5C7E8 /* NoteMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E626B4080154DED88222CC87 /* NoteMapper.swift */; };
 		D48B3204E992D978725CD135 /* MetronomeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323D72945375422B83879688 /* MetronomeEngine.swift */; };
@@ -97,6 +98,7 @@
 		E419701774EEDE7BE0F75E8B /* PitchDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PitchDetector.swift; sourceTree = "<group>"; };
 		E4F7EE329D1EB5B8EA651261 /* InstrumentPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstrumentPreset.swift; sourceTree = "<group>"; };
 		E626B4080154DED88222CC87 /* NoteMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMapper.swift; sourceTree = "<group>"; };
+		E99B2CF4B605D9637DD085B1 /* MetronomeSubBeatHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeSubBeatHelpers.swift; sourceTree = "<group>"; };
 		EFB60FBAB022418113C7C546 /* TunerStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerStyle.swift; sourceTree = "<group>"; };
 		F088DF79DC630C33CAB66BBD /* MetronomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeView.swift; sourceTree = "<group>"; };
 		FA1E7673F68DCD65713DE2C3 /* TunerDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunerDisplayView.swift; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 				179BE42D209E35F0CA4C708E /* LinearBarView.swift */,
 				C052EB051C6AA5562E2592E9 /* MetronomeCircularView.swift */,
 				BFFE9E87ED67580EA5C2B604 /* MetronomeMinimalView.swift */,
+				E99B2CF4B605D9637DD085B1 /* MetronomeSubBeatHelpers.swift */,
 				C63873201B76E00CCDA348DC /* MinimalistView.swift */,
 				3BF44E271F581CA31AF1FE9B /* NeedleGaugeView.swift */,
 			);
@@ -387,6 +390,7 @@
 				D48B3204E992D978725CD135 /* MetronomeEngine.swift in Sources */,
 				7CCA807CCA699EDC4446476F /* MetronomeMinimalView.swift in Sources */,
 				A515832E59DCAAECF3CC3390 /* MetronomeStyle.swift in Sources */,
+				CAE9F2AA66C5A1896AB96BF3 /* MetronomeSubBeatHelpers.swift in Sources */,
 				2463AC0F349E5274352F231E /* MetronomeView.swift in Sources */,
 				B95AC6C89FF60E371AE87286 /* MetronomeViewModel.swift in Sources */,
 				B0FE1653079F88C37FC7DD58 /* MinimalistView.swift in Sources */,

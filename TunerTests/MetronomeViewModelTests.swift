@@ -12,6 +12,7 @@ final class MetronomeViewModelTests: XCTestCase {
         UserDefaults.standard.removeObject(forKey: "metronomeTimeSignature")
         UserDefaults.standard.removeObject(forKey: "metronomeStyle")
         UserDefaults.standard.removeObject(forKey: "metronomeSubdivision")
+        UserDefaults.standard.removeObject(forKey: "metronomeSubdivision")
         viewModel = MetronomeViewModel()
     }
 

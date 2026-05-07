@@ -1,4 +1,4 @@
-enum BeatSubdivision: String, CaseIterable, Identifiable, Codable {
+enum BeatSubdivision: String, CaseIterable, Identifiable {
     case none = "None"
     case eighths = "Eighths"
     case triplets = "Triplets"
@@ -16,4 +16,13 @@ enum BeatSubdivision: String, CaseIterable, Identifiable, Codable {
     }
 
     var displayName: String { rawValue }
+
+    var sfSymbolName: String {
+        switch self {
+        case .none: "1.circle"
+        case .eighths: "2.circle"
+        case .triplets: "3.circle"
+        case .sixteenths: "4.circle"
+        }
+    }
 }

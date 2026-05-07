@@ -149,9 +149,16 @@ final class MetronomeEngineTests: XCTestCase {
         XCTAssertEqual(Array(beats.prefix(5)), [0, 1, 2, 3, 0])
     }
 
-    func testUpdateSubdivisionWhilePlaying() {
-        engine.start(bpm: 120, beatsPerMeasure: 4, subdivisionsPerBeat: 1)
+    func testUpdateSubdivisionWhilePlaying() async {
+        let expectation = XCTestExpectation(description: "triplet sub-beat fires after update")
+
+        engine.onSubBeat = { _, subBeat in
+            if subBeat == 2 { expectation.fulfill() }
+        }
+
+        engine.start(bpm: 240, beatsPerMeasure: 4, subdivisionsPerBeat: 1)
         engine.updateSubdivision(3)
-        XCTAssertTrue(engine.isPlaying)
+
+        await fulfillment(of: [expectation], timeout: 2.0)
     }
 }

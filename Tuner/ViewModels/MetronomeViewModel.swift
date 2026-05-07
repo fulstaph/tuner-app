@@ -36,6 +36,7 @@ final class MetronomeViewModel {
         engine.onStop = { [weak self] in
             self?.isPlaying = false
             self?.currentBeat = 0
+            self?.currentSubBeat = 0
         }
         engine.onResume = { [weak self] in
             self?.isPlaying = true
@@ -60,6 +61,7 @@ final class MetronomeViewModel {
         guard started else { return }
         isPlaying = true
         currentBeat = 0
+        currentSubBeat = 0
     }
 
     func stop() {
