@@ -219,7 +219,10 @@ final class MetronomeEngine {
         scheduler = timer
     }
 
-    @objc private func handleInterruption(notification: Notification) {
+}
+
+private extension MetronomeEngine {
+    @objc func handleInterruption(notification: Notification) {
         guard let userInfo = notification.userInfo,
               let typeRaw = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
               let type = AVAudioSession.InterruptionType(rawValue: typeRaw) else { return }
@@ -231,7 +234,6 @@ final class MetronomeEngine {
             switch type {
             case .began:
                 self.interruptedWhilePlaying = self.isPlaying
-                // Stop audio without clearing the interrupted flag
                 self.scheduler?.cancel()
                 self.scheduler = nil
                 if let player = self.playerNode {
@@ -253,7 +255,11 @@ final class MetronomeEngine {
                 let options = AVAudioSession.InterruptionOptions(rawValue: optionsRaw)
                 guard options.contains(.shouldResume) else { return }
 
-                self.start(bpm: self.bpm, beatsPerMeasure: self.beatsPerMeasure, subdivisionsPerBeat: self.subdivisionsPerBeat)
+                self.start(
+                    bpm: self.bpm,
+                    beatsPerMeasure: self.beatsPerMeasure,
+                    subdivisionsPerBeat: self.subdivisionsPerBeat
+                )
                 DispatchQueue.main.async { [weak self] in self?.onResume?() }
 
             @unknown default:
