@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var tunerViewModel = TunerViewModel()
-    @State private var metronomeViewModel = MetronomeViewModel()
+    @Bindable var tunerViewModel: TunerViewModel
+    @Bindable var metronomeViewModel: MetronomeViewModel
     @State private var showSettings = false
     @Environment(\.scenePhase) private var scenePhase
 
