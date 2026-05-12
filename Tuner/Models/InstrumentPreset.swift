@@ -1,4 +1,4 @@
-enum InstrumentPreset: String, CaseIterable, Identifiable {
+enum InstrumentPreset: String, CaseIterable, Identifiable, Codable {
     case concert
     case bFlat
     case eFlat

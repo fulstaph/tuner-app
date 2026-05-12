@@ -1,4 +1,4 @@
-enum TunerStyle: String, CaseIterable, Identifiable {
+enum TunerStyle: String, CaseIterable, Identifiable, Codable {
     case needle
     case linearBar
     case minimalist

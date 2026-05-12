@@ -1,4 +1,5 @@
 // Tuner/ViewModels/MetronomeViewModel.swift
+import SwiftData
 import SwiftUI
 
 @Observable
@@ -12,15 +13,18 @@ final class MetronomeViewModel {
     private let engine = MetronomeEngine()
     private var tapTimestamps: [Date] = []
 
-    init() {
-        let storedBPM = UserDefaults.standard.integer(forKey: "metronomeBPM")
-        if storedBPM > 0 { self.bpm = storedBPM }
+    private let modelContext: ModelContext?
+    private var activePreset: Preset?
 
-        let storedTS = UserDefaults.standard.string(forKey: "metronomeTimeSignature")
-        if let ts = storedTS.flatMap(TimeSignature.init(rawValue:)) { self.timeSignature = ts }
+    init(modelContext: ModelContext? = nil, activePreset: Preset? = nil) {
+        self.modelContext = modelContext
+        self.activePreset = activePreset
 
-        let storedStyle = UserDefaults.standard.string(forKey: "metronomeStyle")
-        if let s = storedStyle.flatMap(MetronomeStyle.init(rawValue:)) { self.style = s }
+        if let activePreset {
+            self.bpm = activePreset.bpm
+            self.timeSignature = activePreset.timeSignature
+            self.style = activePreset.metronomeStyle
+        }
 
         engine.onBeat = { [weak self] beat in
             self?.currentBeat = beat
@@ -61,19 +65,24 @@ final class MetronomeViewModel {
 
     func setBPM(_ newBPM: Int) {
         bpm = min(240, max(40, newBPM))
-        UserDefaults.standard.set(bpm, forKey: "metronomeBPM")
+        persist { $0.bpm = bpm }
         if isPlaying { engine.updateTempo(bpm: bpm) }
     }
 
     func setTimeSignature(_ ts: TimeSignature) {
         timeSignature = ts
-        UserDefaults.standard.set(ts.rawValue, forKey: "metronomeTimeSignature")
+        persist {
+            $0.timeSignature = ts
+            if $0.accentPattern.count != ts.beatsPerMeasure {
+                $0.accentPattern = Preset.defaultAccentPattern(for: ts)
+            }
+        }
         if isPlaying { engine.updateBeatsPerMeasure(ts.beatsPerMeasure) }
     }
 
     func setStyle(_ newStyle: MetronomeStyle) {
         style = newStyle
-        UserDefaults.standard.set(newStyle.rawValue, forKey: "metronomeStyle")
+        persist { $0.metronomeStyle = newStyle }
     }
 
     func tapTempo(at date: Date = Date()) {
@@ -90,5 +99,12 @@ final class MetronomeViewModel {
         let averageInterval = intervals.reduce(0, +) / Double(intervals.count)
         let computedBPM = Int(round(60.0 / averageInterval))
         setBPM(computedBPM)
+    }
+
+    private func persist(_ mutate: (Preset) -> Void) {
+        guard let preset = activePreset, let context = modelContext else { return }
+        mutate(preset)
+        preset.updatedAt = Date()
+        try? context.save()
     }
 }

@@ -1,4 +1,5 @@
 import AVFoundation
+import SwiftData
 import SwiftUI
 
 @Observable
@@ -6,20 +7,23 @@ final class TunerViewModel {
     var tunerData = TunerData()
 
     var tunerStyle: TunerStyle {
-        didSet { UserDefaults.standard.set(tunerStyle.rawValue, forKey: "tunerStyle") }
+        didSet { persist { $0.tunerStyle = tunerStyle } }
     }
 
     var instrumentPreset: InstrumentPreset {
-        didSet { UserDefaults.standard.set(instrumentPreset.rawValue, forKey: "instrumentPreset") }
+        didSet { persist { $0.instrumentPreset = instrumentPreset } }
     }
 
     var referencePitch: Double {
-        didSet { UserDefaults.standard.set(referencePitch, forKey: "referencePitch") }
+        didSet { persist { $0.referencePitch = referencePitch } }
     }
 
     private let audioEngine: AudioEngineProtocol
     private let pitchDetector: PitchDetector
     private var isRunning = false
+
+    private let modelContext: ModelContext?
+    private var activePreset: Preset?
 
     var avAudioEngine: AVAudioEngine? { audioEngine.avAudioEngine }
 
@@ -29,17 +33,18 @@ final class TunerViewModel {
     private var recentNotes: [(String, Int)] = []
     private let debounceCount = 3
 
-    init(audioEngine: AudioEngineProtocol = AudioEngine()) {
+    init(
+        audioEngine: AudioEngineProtocol = AudioEngine(),
+        modelContext: ModelContext? = nil,
+        activePreset: Preset? = nil
+    ) {
         self.audioEngine = audioEngine
+        self.modelContext = modelContext
+        self.activePreset = activePreset
 
-        let storedStyle = UserDefaults.standard.string(forKey: "tunerStyle")
-        self.tunerStyle = storedStyle.flatMap(TunerStyle.init(rawValue:)) ?? .needle
-
-        let storedPreset = UserDefaults.standard.string(forKey: "instrumentPreset")
-        self.instrumentPreset = storedPreset.flatMap(InstrumentPreset.init(rawValue:)) ?? .concert
-
-        let storedPitch = UserDefaults.standard.double(forKey: "referencePitch")
-        self.referencePitch = storedPitch > 0 ? storedPitch : 440.0
+        self.tunerStyle = activePreset?.tunerStyle ?? .needle
+        self.instrumentPreset = activePreset?.instrumentPreset ?? .concert
+        self.referencePitch = activePreset?.referencePitch ?? 440.0
 
         self.pitchDetector = PitchDetector(sampleRate: audioEngine.sampleRate)
 
@@ -62,6 +67,13 @@ final class TunerViewModel {
         guard isRunning else { return }
         isRunning = false
         audioEngine.stop()
+    }
+
+    private func persist(_ mutate: (Preset) -> Void) {
+        guard let preset = activePreset, let context = modelContext else { return }
+        mutate(preset)
+        preset.updatedAt = Date()
+        try? context.save()
     }
 
     private func processBuffer(_ buffer: [Float]) {

@@ -1,23 +1,30 @@
 // TunerTests/MetronomeViewModelTests.swift
+import SwiftData
 import XCTest
 @testable import Tuner
 
 final class MetronomeViewModelTests: XCTestCase {
     var viewModel: MetronomeViewModel!
+    var container: ModelContainer!
+    var context: ModelContext!
+    var preset: Preset!
 
     @MainActor
     override func setUp() {
         super.setUp()
-        UserDefaults.standard.removeObject(forKey: "metronomeBPM")
-        UserDefaults.standard.removeObject(forKey: "metronomeTimeSignature")
-        UserDefaults.standard.removeObject(forKey: "metronomeStyle")
-        viewModel = MetronomeViewModel()
+        container = PersistenceTestHelpers.makeInMemoryContainer()
+        context = container.mainContext
+        preset = PersistenceTestHelpers.seedDefaultPreset(in: context)
+        viewModel = MetronomeViewModel(modelContext: context, activePreset: preset)
     }
 
     @MainActor
     override func tearDown() {
         viewModel.stop()
         viewModel = nil
+        preset = nil
+        context = nil
+        container = nil
         super.tearDown()
     }
 
@@ -54,16 +61,22 @@ final class MetronomeViewModelTests: XCTestCase {
     }
 
     @MainActor
-    func testSetBPMPersists() {
+    func testSetBPMPersistsToActivePreset() {
         viewModel.setBPM(160)
-        XCTAssertEqual(UserDefaults.standard.integer(forKey: "metronomeBPM"), 160)
+        XCTAssertEqual(preset.bpm, 160)
     }
 
     @MainActor
-    func testSetTimeSignaturePersists() {
+    func testSetTimeSignaturePersistsToActivePreset() {
         viewModel.setTimeSignature(.sevenEight)
-        let stored = UserDefaults.standard.string(forKey: "metronomeTimeSignature")
-        XCTAssertEqual(stored, "7/8")
+        XCTAssertEqual(preset.timeSignature, .sevenEight)
+        XCTAssertEqual(preset.accentPattern.count, 7)
+    }
+
+    @MainActor
+    func testSetStylePersistsToActivePreset() {
+        viewModel.setStyle(.circularGauge)
+        XCTAssertEqual(preset.metronomeStyle, .circularGauge)
     }
 
     @MainActor
@@ -108,5 +121,18 @@ final class MetronomeViewModelTests: XCTestCase {
         viewModel.stop()
         XCTAssertFalse(viewModel.isPlaying)
         XCTAssertEqual(viewModel.currentBeat, 0)
+    }
+
+    @MainActor
+    func testInitLoadsExistingPresetValues() {
+        preset.bpm = 180
+        preset.timeSignature = .threeFour
+        preset.metronomeStyle = .circularGauge
+        try? context.save()
+
+        let restored = MetronomeViewModel(modelContext: context, activePreset: preset)
+        XCTAssertEqual(restored.bpm, 180)
+        XCTAssertEqual(restored.timeSignature, .threeFour)
+        XCTAssertEqual(restored.style, .circularGauge)
     }
 }

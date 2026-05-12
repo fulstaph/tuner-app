@@ -1,19 +1,36 @@
+import SwiftData
 import XCTest
 @testable import Tuner
 
 final class TunerViewModelTests: XCTestCase {
     var mockEngine: MockAudioEngine!
     var viewModel: TunerViewModel!
+    var container: ModelContainer!
+    var context: ModelContext!
+    var preset: Preset!
 
     @MainActor
     override func setUp() {
         super.setUp()
-        // Clear persisted settings so defaults are used on every run
-        UserDefaults.standard.removeObject(forKey: "tunerStyle")
-        UserDefaults.standard.removeObject(forKey: "instrumentPreset")
-        UserDefaults.standard.removeObject(forKey: "referencePitch")
+        container = PersistenceTestHelpers.makeInMemoryContainer()
+        context = container.mainContext
+        preset = PersistenceTestHelpers.seedDefaultPreset(in: context)
         mockEngine = MockAudioEngine()
-        viewModel = TunerViewModel(audioEngine: mockEngine)
+        viewModel = TunerViewModel(
+            audioEngine: mockEngine,
+            modelContext: context,
+            activePreset: preset
+        )
+    }
+
+    @MainActor
+    override func tearDown() {
+        viewModel = nil
+        mockEngine = nil
+        preset = nil
+        context = nil
+        container = nil
+        super.tearDown()
     }
 
     @MainActor
@@ -89,5 +106,40 @@ final class TunerViewModelTests: XCTestCase {
         }
         XCTAssertTrue(viewModel.tunerData.isActive)
         XCTAssertLessThan(viewModel.tunerData.cents, 0)
+    }
+
+    @MainActor
+    func testTunerStyleChangePersistsToActivePreset() throws {
+        viewModel.tunerStyle = .minimalist
+        XCTAssertEqual(preset.tunerStyle, .minimalist)
+    }
+
+    @MainActor
+    func testInstrumentPresetChangePersistsToActivePreset() {
+        viewModel.instrumentPreset = .eFlat
+        XCTAssertEqual(preset.instrumentPreset, .eFlat)
+    }
+
+    @MainActor
+    func testReferencePitchChangePersistsToActivePreset() {
+        viewModel.referencePitch = 444.0
+        XCTAssertEqual(preset.referencePitch, 444.0)
+    }
+
+    @MainActor
+    func testInitLoadsExistingPresetValues() {
+        preset.tunerStyle = .linearBar
+        preset.instrumentPreset = .f
+        preset.referencePitch = 441.5
+        try? context.save()
+
+        let restored = TunerViewModel(
+            audioEngine: MockAudioEngine(),
+            modelContext: context,
+            activePreset: preset
+        )
+        XCTAssertEqual(restored.tunerStyle, .linearBar)
+        XCTAssertEqual(restored.instrumentPreset, .f)
+        XCTAssertEqual(restored.referencePitch, 441.5)
     }
 }
