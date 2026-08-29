@@ -53,6 +53,15 @@ struct SettingsView: View {
                         Text(style.displayName).tag(style)
                     }
                 }
+
+                Picker("Subdivision", selection: Binding(
+                    get: { metronomeViewModel.subdivision },
+                    set: { metronomeViewModel.setSubdivision($0) }
+                )) {
+                    ForEach(BeatSubdivision.allCases) { sub in
+                        Text(sub.displayName).tag(sub)
+                    }
+                }
             }
         }
         .navigationTitle("Settings")

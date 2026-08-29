@@ -11,6 +11,8 @@ final class MetronomeViewModelTests: XCTestCase {
         UserDefaults.standard.removeObject(forKey: "metronomeBPM")
         UserDefaults.standard.removeObject(forKey: "metronomeTimeSignature")
         UserDefaults.standard.removeObject(forKey: "metronomeStyle")
+        UserDefaults.standard.removeObject(forKey: "metronomeSubdivision")
+        UserDefaults.standard.removeObject(forKey: "metronomeSubdivision")
         viewModel = MetronomeViewModel()
     }
 
@@ -108,5 +110,25 @@ final class MetronomeViewModelTests: XCTestCase {
         viewModel.stop()
         XCTAssertFalse(viewModel.isPlaying)
         XCTAssertEqual(viewModel.currentBeat, 0)
+    }
+
+    @MainActor
+    func testDefaultSubdivision() {
+        XCTAssertEqual(viewModel.subdivision, .none)
+    }
+
+    @MainActor
+    func testSetSubdivisionPersists() {
+        viewModel.setSubdivision(.triplets)
+        let stored = UserDefaults.standard.string(forKey: "metronomeSubdivision")
+        XCTAssertEqual(stored, "Triplets")
+    }
+
+    @MainActor
+    func testSubdivisionRestoredFromUserDefaults() {
+        UserDefaults.standard.set("Eighths", forKey: "metronomeSubdivision")
+        let restored = MetronomeViewModel()
+        XCTAssertEqual(restored.subdivision, .eighths)
+        restored.stop()
     }
 }

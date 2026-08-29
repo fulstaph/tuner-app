@@ -39,7 +39,7 @@ struct MetronomeCircularView: View {
     }
 
     private var beatSquares: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             ForEach(0..<viewModel.timeSignature.beatsPerMeasure, id: \.self) { beat in
                 RoundedRectangle(cornerRadius: 6)
                     .fill(beatColor(beat))
@@ -50,6 +50,21 @@ struct MetronomeCircularView: View {
                             .foregroundStyle(beatTextColor(beat))
                     }
                     .animation(.easeOut(duration: 0.15), value: viewModel.currentBeat)
+
+                if viewModel.subdivision != .none
+                    && beat < viewModel.timeSignature.beatsPerMeasure - 1 {
+                    ForEach(1..<viewModel.subdivision.subdivisionsPerBeat, id: \.self) { sub in
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(subBeatColor(
+                                beat: beat, subBeat: sub,
+                                currentBeat: viewModel.currentBeat,
+                                currentSubBeat: viewModel.currentSubBeat,
+                                isPlaying: viewModel.isPlaying
+                            ))
+                            .frame(width: 8, height: 8)
+                            .animation(.easeOut(duration: 0.1), value: viewModel.currentSubBeat)
+                    }
+                }
             }
         }
     }
@@ -77,6 +92,19 @@ struct MetronomeCircularView: View {
                     .padding(.vertical, 8)
                     .background(Color(.systemGray5), in: RoundedRectangle(cornerRadius: 8))
             }
+
+            Menu {
+                ForEach(BeatSubdivision.allCases) { sub in
+                    Button(sub.displayName) { viewModel.setSubdivision(sub) }
+                }
+            } label: {
+                Image(systemName: viewModel.subdivision.sfSymbolName)
+                    .font(.subheadline.weight(.medium))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(Color(.systemGray5), in: RoundedRectangle(cornerRadius: 8))
+            }
+            .accessibilityLabel("Subdivision: \(viewModel.subdivision.displayName)")
 
             Button(action: { viewModel.setBPM(viewModel.bpm - 1) }) {
                 Image(systemName: "minus")
@@ -119,4 +147,5 @@ struct MetronomeCircularView: View {
             set: { viewModel.setBPM($0) }
         )
     }
+
 }

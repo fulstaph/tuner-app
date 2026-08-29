@@ -98,4 +98,67 @@ final class MetronomeEngineTests: XCTestCase {
         engine.onResume = {}
         XCTAssertNotNil(engine.onResume)
     }
+
+    func testSubdivisionOnBeatFiresOnlyOnMainBeats() async {
+        let beatExpectation = XCTestExpectation(description: "main beats fire")
+        beatExpectation.expectedFulfillmentCount = 3
+        var beats: [Int] = []
+
+        engine.onBeat = { beat in
+            beats.append(beat)
+            beatExpectation.fulfill()
+        }
+
+        engine.start(bpm: 240, beatsPerMeasure: 2, subdivisionsPerBeat: 2)
+        await fulfillment(of: [beatExpectation], timeout: 2.0)
+
+        XCTAssertEqual(Array(beats.prefix(3)), [0, 1, 0])
+    }
+
+    func testSubdivisionOnSubBeatPattern() async {
+        let subExpectation = XCTestExpectation(description: "sub beats fire")
+        subExpectation.expectedFulfillmentCount = 5
+        var subBeats: [(Int, Int)] = []
+
+        engine.onSubBeat = { beat, subBeat in
+            subBeats.append((beat, subBeat))
+            subExpectation.fulfill()
+        }
+
+        engine.start(bpm: 240, beatsPerMeasure: 2, subdivisionsPerBeat: 2)
+        await fulfillment(of: [subExpectation], timeout: 2.0)
+
+        let expected = [(0, 0), (0, 1), (1, 0), (1, 1), (0, 0)]
+        XCTAssertEqual(subBeats.prefix(5).map(\.0), expected.map(\.0))
+        XCTAssertEqual(subBeats.prefix(5).map(\.1), expected.map(\.1))
+    }
+
+    func testNoSubdivisionBackwardCompat() async {
+        let expectation = XCTestExpectation(description: "beats without subdivision")
+        expectation.expectedFulfillmentCount = 5
+        var beats: [Int] = []
+
+        engine.onBeat = { beat in
+            beats.append(beat)
+            expectation.fulfill()
+        }
+
+        engine.start(bpm: 240, beatsPerMeasure: 4, subdivisionsPerBeat: 1)
+        await fulfillment(of: [expectation], timeout: 2.0)
+
+        XCTAssertEqual(Array(beats.prefix(5)), [0, 1, 2, 3, 0])
+    }
+
+    func testUpdateSubdivisionWhilePlaying() async {
+        let expectation = XCTestExpectation(description: "triplet sub-beat fires after update")
+
+        engine.onSubBeat = { _, subBeat in
+            if subBeat == 2 { expectation.fulfill() }
+        }
+
+        engine.start(bpm: 240, beatsPerMeasure: 4, subdivisionsPerBeat: 1)
+        engine.updateSubdivision(3)
+
+        await fulfillment(of: [expectation], timeout: 2.0)
+    }
 }
